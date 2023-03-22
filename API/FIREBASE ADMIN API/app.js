@@ -1,5 +1,6 @@
 let express = require("express");
-config = require("./config");
+const config = require("./config");
+const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 var logger = require('morgan');
@@ -8,7 +9,54 @@ let bodyParser = require("body-parser");
 let userRouter = require('./routes/userRouter');
 let documentsRouter = require('./routes/documentsRouter');
 let path = require("path");
+const MongoStore = require("connect-mongo");
 const PORT = config.PORT;
+const flash = require('connect-flash');
+
+
+/**
+ * Session Store
+ */
+
+
+let app = express();
+app.use(session({
+    httpOnly: true,
+    secret: config.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: config.dbURI,
+        ttl: 60 * 60 * 24 * 7,
+    }),
+    cookie: {
+        maxAge: 60 * 60 * 24 * 7 * 1000,
+        sameSite: false,
+        secure: false
+    }
+}));
+
+
+
+app.use(flash());
+
+/**
+ * FLASH MESSAGES MIDDLEWARE FOR ALL ROUTES
+ */
+app.use((req, res, next) => {
+    res.locals.flashMessages = req.flash();
+    res.locals.successMessages = req.flash('success_msg');
+    res.locals.user = req.session.user;
+    res.locals.errorMessages = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+});
+
+
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
 
 /**
  * Main Router
@@ -25,7 +73,12 @@ const csrfProtection = csrf({ cookie: true });
  */
 let checkAuth = require('./middlewares/auth').checkAuth;
 // Express
-let app = express();
+
+
+
+
+
+
 /**
  * VIEW ENGINE
  */
@@ -38,6 +91,18 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'static')));
 app.use(checkAuth);
 
+
+
+/**
+ * FLASH ERROR MESSAGES
+ */
+app.use((req, res, next) => {
+    res.locals.flashMessages = req.flash();
+    console.log(res.locals.flashMessages);
+    next();
+});
+
+
 // /**
 //  * CSRF TOKEN
 //  * */
@@ -47,6 +112,11 @@ app.use(checkAuth);
 //     res.cookie("XSRF-TOKEN", req.csrfToken());
 //     next();
 // });
+
+
+
+
+
 
 /**
  * Main Router

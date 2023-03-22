@@ -8,7 +8,6 @@
     <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
     <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="./styles/index.css" />
@@ -40,16 +39,17 @@
                 /**
                  * Post Token to server
                  */
-                function postToken(idToken) {
+                function postToken(idToken, user) {
                     fetch("/login", {
                         method: "POST",
                         headers: {
                             Accept: "application/json",
                             "Content-Type": "application/json",
                             "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+
                         },
                         body: JSON.stringify({
-                            idToken
+                            user
                         }),
                     }).then(function(response) {
                         /** Based on the response from the server, we can either redirect to the profile page or display an error message */
@@ -71,14 +71,35 @@
                              * Set User Cookie
                              */
 
-                            Cookies.set('user', JSON.stringify(user));
+                            console.log(user)
+
+                            fetch("/login", {
+                                method: "POST",
+                                headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "application/json",
+                                    "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+
+                                },
+                                body: JSON.stringify({
+                                    user
+                                }),
+                            }).then(function(response) {
+                                /** Based on the response from the server, we can either redirect to the profile page or display an error message */
+                                if (response.ok) {
+                                    console.log("Cookie Set")
+                                } else {
+                                    console.log("Error")
+                                }
+                            })
+
+
 
                             user.getIdToken().then(function(idToken) {
-                                console.log(idToken)
-                                    /**
-                                     * Call Post Token to server
-                                     */
-                                postToken(idToken);
+                                /**
+                                 * Call Post Token to server
+                                 */
+                                postToken(idToken, user);
 
                                 /**
                                  * Sign Firebase User Out
@@ -139,6 +160,9 @@
                         <div id="firebaseui-container"></div>
                         <div id="firebaseui-auth-container"></div>
                         <p>Log in to your account to get access to app.</p>
+
+
+                        </ul>
 
                     </div>
                 </div>

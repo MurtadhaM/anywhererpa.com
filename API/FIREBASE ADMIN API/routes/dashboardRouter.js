@@ -1,39 +1,114 @@
 let config = require("../config");
 const express = require('express');
+const app = express();
 const User = require("../models/user");
 let dashboardRouter = express.Router();
+let sessionStore = require('connect-mongo');
 
 
 /**
  * Dashboard page
  * */
 
-dashboardRouter.route('/dashboard').get((req, res) => {
-    res.render('dashboard');
+
+const session = require('express-session');
+const MongoStore = require("connect-mongo");
+const PORT = config.PORT;
+const flash = require('connect-flash');
+
+
+/**
+ * Session Store
+ * */
+
+
+app.use(session({
+    httpOnly: true,
+    secret: config.SESSION_SECRET,
+
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+        mongoUrl: config.dbURI,
+        ttl: 60 * 60 * 24 * 7,
+    }),
+    cookie: {
+        maxAge: 60 * 60 * 24 * 7 * 1000,
+        sameSite: false,
+        secure: false
+    }
+}));
+
+app.use(flash());
+
+/**
+ * FLASH MESSAGES MIDDLEWARE FOR ALL ROUTES
+ * */
+app.use((req, res, next) => {
+    res.locals.flashMessages = req.flash();
+    res.locals.successMessages = req.flash('success_msg');
+    res.locals.user = req.session.user;
+    res.locals.errorMessages = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
 });
+
+
+
+
+dashboardRouter.route('/dashboard').get((req, res) => {
+    if (req.session.user) {
+        req.flash('info', 'Dashboard');
+        res.render('dashboard');
+    } else {
+        req.flash('error', 'Please login to view this page');
+
+        res.redirect('/login');
+
+
+    }
+})
+
+
 
 /**
  * Admin page
  * */
 dashboardRouter.route('/admin').get((req, res) => {
+
+    req.flash('info, ${req.user.email}');
+
+    sessionStore.get(req.sessionID, function(err, session) {
+        if (err) {
+            console.log(err);
+            req.flash('error', 'admin page error');
+            res.redirect('/login');
+        } else {
+            console.log(session);
+        }
+
+    });
+
+
+
     res.render('admin');
 });
 
 /**
  * Profile page
  * */
-dashboardRouter.route('/profile').get((req, res) => {
-    res.render('profile');
-});
-
 
 /**
  * Clients page
  *  */
 dashboardRouter.route('/clients').get(async(req, res) => {
     const clients = await User.find({ role: "user" });
-    console.log(clients);
+
+    req.flash('success', 'Got all clients')
+
+
     res.render('clients', { clients: clients });
+
     // Get all useres where role =user
 
 });
@@ -42,17 +117,8 @@ dashboardRouter.route('/clients').get(async(req, res) => {
  * Documents page
  * */
 dashboardRouter.route('/documents').get((req, res) => {
+    req.flash('info', 'Documents');
     res.render('documents');
-});
-
-
-/**
- * Logout user
- * */
-dashboardRouter.route('/logout').get((req, res) => {
-    res.clearCookie('session');
-    res.clearCookie('user');
-    res.redirect("/login");
 });
 
 /**
@@ -90,6 +156,7 @@ dashboardRouter.route('/clients/:id').get((req, res) => {
 
 
 })
+
 
 
 

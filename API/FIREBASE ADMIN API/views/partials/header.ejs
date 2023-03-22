@@ -30,5 +30,31 @@
 </head>
 
 <body>
-    <%- include('navbar') %>
-        <div id="root">
+
+    <div id="root" class="root">
+
+        <%- include('navbar') %>
+            <div id="root">
+                <% if (errorMessages.length > 0) { %>
+                    <div class="error-message">
+                        <%= errorMessages %>
+                    </div>
+                    <% } %>
+
+                        <% if (successMessages.length > 0) { %>
+                            <div class="success-message">
+                                <%= successMessages %>
+                                    <%= alert("success") %>
+                            </div>
+                            <% } %>
+
+                                <% if(flashMessages.length >0 ) { %>
+
+                                    <div class="flash-message">
+                                        <%= flashMessages %>
+
+                                            <button class="close-flash-message" onclick="closeFlashMessage()">X</button>
+
+                                            <% } %>
+
+                                    </div>

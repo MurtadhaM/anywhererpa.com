@@ -16,19 +16,36 @@ function createSessionCookie(req, res) {
     }
     // Set session expiration to 5 days.
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    const storage = MongoStore.create({
+        mongoUrl: config.dbURI,
+        ttl: 60 * 60 * 24 * 7,
+        httpOnly: true,
+        secure: false,
+        sameSite: false,
+
+    })
+
     admin
         .auth()
-        .createSessionCookie(idToken, { expiresIn })
-        .then(
-            (sessionCookie) => {
-                const options = { maxAge: expiresIn, httpOnly: true };
-                res.cookie("session", sessionCookie, options);
-                res.end(JSON.stringify({ status: "success" }));
-            },
-            (error) => {
-                res.status(401).send("UNAUTHORIZED REQUEST!");
-            }
-        );
+        .createSessionCookie(idToken, { expiresIn }, storage)
+
+    .then(
+        (sessionCookie) => {
+
+
+
+            res.cookie("token", sessionCookie, { maxAge: expiresIn, httpOnly: true }, storage);
+            req.session.token = sessionCookie;
+            req.session.save();
+
+            res.end(JSON.stringify({ status: "success" }));
+        },
+        (error) => {
+            console.log(error);
+            res.flash('error', error.message);
+            res.status(401).redirect('/login');
+        }
+    );
 }
 
 /**
@@ -55,39 +72,55 @@ function verifySessionCookie(req, res, next) {
 
 
 function checkAuth(req, res, next) {
-
-    const sessionCookie = req.cookies.session || "";
+    const sessionCookie = req.cookies.session || '';
     /**
      * Skip the middleware if the route is excluded
      */
     if (PUBLIC_ROUTES.includes(req.path)) {
+        console.log(`Skipping auth middleware for ${req.path}`)
+        req.flash('success', 'You are now logged in!')
         next();
         return;
     }
 
+    /**
+     * Check if the session cookie is present.
+     * */
+
+    console.log(sessionCookie);
 
     if (!sessionCookie) {
         res.status(301).redirect('/login');
-        // res.status(401).send('UNAUTHORIZED TOKEN!');
         return;
     }
-    admin
-        .auth()
-        .verifySessionCookie(sessionCookie, true /** checkRevoked */ )
-        .then((userData) => {
-            let email = userData.email.replace('%40', '@');
 
-            res.cookie('email', email, { maxAge: 900000, httpOnly: true });
-            next()
-        })
-        .catch((error) => {
-            console.log("error", error)
-            res.status(401).send('ERROR!' + error);
-        });
+
+    /**
+     * Check if the session cookie is valid.
+     */
+
+    req.flash('success', 'You are now logged in!');
+    console.log('Session cookie is valid!');
+    req.flash('success', 'You are now logged in!');
+    next();
+    /**
+     * The session cookie is present. Verify it.
+     * */
+    // admin.auth().verifySessionCookie(
+    //     sessionCookie, true /** checkRevoked */ ).then((decodedClaims) => {
+    //         console.log('Session cookie is valid!');
+    //         next();
+
+    //         console.log('Session cookie is valid!');
+    //         next();
+    //     }
+
+    // ).catch((error) => {
+    //     console.log(error);
+    //     res.status(301).redirect('/login');
+    // });
+
 }
-
-
-
 
 // let auth = req.headers.authorization;
 // if (!auth) {
