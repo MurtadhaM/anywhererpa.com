@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firebase Server Auth</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mvp.css/1.6.2/mvp.css" integrity="sha512-slB21TTezvEAaveXL2z5dh3TjuIuk5XNI+9xzQRmTl8i651v3JQLKPEiHuMR6xyw1P+VXGt7QQdv9Xb0iBXnkQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/styles/main.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+    <!-- JQUERY-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- BOOTSTRAP-->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="/styles/main.css" />
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  </head>
+  <body>
+    <main>
+  </form>
+      <section>
+        <form id="signup"  >
+          <label>Email</label>
+          <input id="email" type="text" name="email" />
+          <label>Password</label>
+          <input  id="password" type="password" name="password" />
+          <button id="signupBTN">Sign up</button>
+        </form>
+      </section>
+
+      <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
+
+      <script>
+        
+       
+   
+          $("#signupBTN").on('click', (function(event){
+            event.preventDefault();
+            const email = $("#email").val();
+            const password =  $("#password").val();
+            console.log(email);
+
+            axios.post("/signup" , {email, password}
+            )
+            .then((response) => {
+              if(response.data.status === "200"){
+                toastr.success(response.data.message);
+                // redirect
+                window.location.href = "/profile";
+              }else{
+                toastr.error(response.data.message);
+                
+              }
+              
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+
+          }));
+   
+              
+         
+        /*
+        const firebaseConfig = {
+          apiKey: "AIzaSyCepYmhxD5xLbcS9IsyAyWeZTKgfBoCW5E",
+databaseURL: "https://file-crm-default-rtdb.firebaseio.com",
+authDomain: "file-crm.firebaseapp.com",
+projectId: "file-crm",
+storageBucket: "file-crm.appspot.com",
+messagingSenderId: "427192387603",
+      };
+
+
+        firebase.initializeApp(firebaseConfig);
+
+        firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+        document
+          .getElementById("signup")
+          .addEventListener("submit", (event) => {
+            event.preventDefault();
+            const login = event.target.login.value;
+            const password = event.target.password.value;
+
+            firebase
+              .auth()
+              .createUserWithEmailAndPassword(login, password)
+              .then(({ user }) => {
+                return user.getIdToken().then((idToken) => {
+                  return fetch("/sessionLogin", {
+                    method: "POST",
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                      "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                    },
+                    body: JSON.stringify({ idToken }),
+                  });
+                });
+              })
+              .then(() => {
+                return firebase.auth().signOut();
+              })
+              .then(() => {
+                window.location.assign("/profile");
+              });
+            return false;
+          });*/
+      </script>
+    </main>
+  </body>
+</html>

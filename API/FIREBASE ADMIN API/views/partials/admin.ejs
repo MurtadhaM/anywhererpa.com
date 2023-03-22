@@ -1,0 +1,75 @@
+ 
+<div class="bodyWrap">
+  <div class="adminPanelWrap">
+    <div class="adminPanelHeader"><h1>Admin pannel</h1></div>
+    <div class="adminNav">
+      <ul class="adminNavList">
+        <li class="adminNavItem active-setting">Users</li>
+      </ul>
+    </div>
+    <div class="contentWrap">
+      <div class="usersSettingWrap">
+        <div class="addNewUserWrap">
+          <span class="addNewUserText">Add new User</span
+          ><button class="addOrder">
+            <i class="fa fa-car fa-lg"></i>
+            Add
+          </button>
+        </div>
+        <div class="usersColumn">
+          <div class="usersInfo">
+            <h3 class="usersInfoHeader">Admin users</h3>
+            <span class="usersInfoText"
+              >Admins have access to all of the content, including all
+              functionality of app, they also can create new users and remove or
+              edit existing ones.</span
+            >
+          </div>
+          <div class="adminUsersTable">
+            <table class="usersTable">
+              <thead>
+                <tr>
+                  <th class="alignCenter"></th>
+                  <th class="alignCenter">Name</th>
+                  <th class="alignCenter">Data created</th>
+                  <th class="alignCenter"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="usersColumn">
+          <div class="usersInfo">
+            <h3 class="usersInfoHeader">Normal users</h3>
+            <span class="usersInfoText"
+              >Normal users have access to pages and subpages of: Orders,
+              Clients, Calendar and Dashboard. They can add, edit and remove
+              clients, orders, and events.</span
+            >
+          </div>
+          <div class="adminUsersTable">
+            <table class="usersTable normalUsersTable">
+              <thead>
+                <tr>
+                  <th class="alignCenter"></th>
+                  <th class="alignCenter">Name</th>
+                  <th class="alignCenter">Data created</th>
+                  <th class="alignCenter"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
+</body>

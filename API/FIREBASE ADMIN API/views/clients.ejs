@@ -1,0 +1,102 @@
+<%- include('partials/header') %>
+
+    <%- include('partials/sidebar') %>
+
+        <%- include('partials/navbar') %>
+
+            <div class="bodyWrap">
+
+                <script defer src="/scripts/clients.js"></script>
+                <div class="contentOrderWrap usersTableWrap">
+                    <div class="leftSide">
+                        <h1>Client
+                            <font class="maincolor">Management</font>
+                        </h1>
+                        <div class="orderNavWrap">
+                            <div class="addOrderWrap">
+                                <input type="text" placeholder="Search by name or ID" value=""><button id="addClient" class="addOrder">
+            <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true" data-testid="AddCircleOutlineRoundedIcon">
+              <path d="M12 7c-.55 0-1 .45-1 1v3H8c-.55 0-1 .45-1 1s.45 1 1 1h3v3c0 .55.45 1 1 1s1-.45 1-1v-3h3c.55 0 1-.45 1-1s-.45-1-1-1h-3V8c0-.55-.45-1-1-1zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg><span class="addOrderText">Add</span>
+          </button>
+                            </div>
+                        </div>
+                        <div class="orderWrap">
+                            <div class="tableResultsWrap">
+                                <div class="resultsSpan">
+                                    Showing
+                                    <font class="resultsBold"> 0 </font>of
+                                    <font class="resultsBold">
+                                        0 </font>results
+                                </div>
+                                <ul class="pagination"></ul>
+                            </div>
+
+                            <table class="usersTable">
+                                <thead>
+                                    <tr>
+                                        <th class="alignCenter">Client ID</th>
+                                        <th class="alignCenter">Client Email</th>
+                                        <th class="alignCenter">Client Phone</th>
+                                        <th class="alignCenter">Client Status</th>
+                                        <th class="alignCenter"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% let users = clients %>
+
+                                        <% if  (clients) {%>
+
+                                            <% for (let i = 0; i < users.length; i++) { %>
+                                                <tr class="tableRow">
+
+                                                    <td class="alignCenter">
+                                                        <div class="" id="clientID">
+                                                            <%= users[i].uid%>
+                                                        </div>
+                                                    </td>
+                                                    <td class="alignCenter">
+                                                        <i class="" id="clientEmail">    <%= users[i].email%> </i>
+
+                                                    </td>
+                                                    <td class="alignCenter">
+                                                        <i class="" id="clientPhone"><%= users[i].phone%>
+                                                        </i>
+
+                                                    </td>
+                                                    <td class="alignCenter">
+                                                        <!-- IF true, then make the status green, else make it red -->
+                                                        <% if (users[i].status == true) {%>
+                                                            <i class="fas fa-circle fa-2x" style="color: green;"></i>
+                                                            <% } else {%>
+                                                                <i class="fas fa-circle" style="color: red;"></i>
+                                                                <% } %>
+
+                                                    </td>
+
+                                                    <td>
+                                                        <a href="/clients/<%= users[i].id %>">
+
+                                                            <i id="editOrderButton" class="fas fa-2x fa-edit"></i>
+                                                    </td>
+                                                </tr>
+                                                <% } %>
+
+                                                    <% } %>
+
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="popup ">
+            </div>
+
+            </body>
+
+            </html>
