@@ -1,0 +1,27 @@
+<script>
+    $(document).ready(function() {
+        $('.close-btn').click(function() {
+            $('.contentLoginWrap').hide();
+        });
+        $('.upload-btn').click(function() {
+            $('.contentLoginWrap').style.display = " block";
+        });
+
+        $('#upload').click(function() {
+            upload();
+        });
+    });
+    const upload = () => {
+        console.log('upload')
+            // Get The Input Values
+        const file = document.querySelector('#chooseFile').files[0]
+
+        const fileName = document.querySelector('#chooseFile').files[0].name
+
+    }
+</script>
+
+<form action="/api/documents/upload" method="post" enctype="multipart/form-data" class="upload-form" id="fileUpload">
+    <input type="file" name="file" class="chooseFile" id="chooseFile" />
+    <input type="submit" id="upload" class="upload-btn" value="Upload" />
+</form>

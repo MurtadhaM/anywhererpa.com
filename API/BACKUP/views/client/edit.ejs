@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+    <!-- <link rel="stylesheet" />
+    <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-auth-compat.js"></script>
+    <script src="/scripts/config.js"></script>
+    <script src="/scripts/common.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script> -->
+
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../styles/index.css" />
+    <link rel="stylesheet" href="../styles/main.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+    <!-- COOKIES-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./../scripts/main.js">
+    </script>
+</head>
+
+<body>
+    <%- include('../partials/navbar') %>
+        <div id="root">
+            <%- include('../partials/sidebar') %>
+
+                <div class="bodyWrap">
+                    <div class="orderPageContentWrap">
+                        <div class="orderPageHeader">
+                            <h1>Client
+                                <font class="maincolor">Management</font>
+                            </h1>
+                        </div>
+                        <div class="orderPageSection">
+                            <div class="orderPageLeftSide">
+                                <div class="">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th class="summaryHeader">
+                                                    <h2>Client
+                                                        <font class="maincolor">Details</font>
+                                                    </h2>
+
+
+                                                    <div id="fields">
+                                                        <fieldset>
+                                                            <!-- FIELDS-->
+                                                            <div class="orderDetailsRow">
+                                                                <div class="orderDetailsLeft">
+                                                                    <div class="orderDetailsLeft">Email</div>
+                                                                </div>
+                                                                <div class="value">
+                                                                    <input type="text" name="name" disabled id="name" value="<%= user.email %>">
+                                                                </div>
+
+                                                                <div class="orderDetailsRight">
+                                                                    <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="orderDetailsRow">
+                                                                <div class="orderDetailsLeft">User iD</div>
+                                                                <div class="value">
+                                                                    <input type="text" name="name" id="name" value="<%= user.uid %>">
+                                                                </div>
+                                                                <div class="orderDetailsRight">
+                                                                    <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
+                                                                </div>
+                                                            </div>
+
+
+                                                            <div class="orderDetailsRow">
+                                                                <div class="orderDetailsLeft">lastLogin</div>
+                                                                <div class="value">
+                                                                    <input type="text" name="name" id="name" value="<%= user.lastLogin %>">
+                                                                </div>
+                                                                <div class="orderDetailsRight">
+                                                                    <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="orderDetailsRow">
+                                                                <div class="orderDetailsLeft">phone</div>
+                                                                <div class="value">
+                                                                    <input type="text" name="name" id="name" value="<%= user.phone %>">
+                                                                </div>
+                                                                <div class="orderDetailsRight">
+                                                                    <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        </fieldset>
+
+                                                    </div>
+                                </div>
+                                </tr>
+                                </thead>
+
+                                </table>
+                            </div>
+
+
+
+                            <h1 class="summaryHeader">Documents</h1>
+                            <!-- Documents-->
+                            <% for (let document in  user.documents) {%>
+                                <div class="orderDetailsRow">
+                                    <div class="orderDetailsLeft">Name</div>
+                                    <div class="orderDetailsRight">
+                                        <%= document %>
+                                    </div>
+                                </div>
+                                <div class="orderDetailsRow">
+                                    <div class="orderDetailsLeft">URL</div>
+                                    <div class="orderDetailsRight">
+                                        <%= user.documents[document] %>
+                                    </div>
+                                </div>
+                                <% } %>
+
+
+
+                                    <h1>
+
+                        </div>
+                        <div class="orderPageRightSide">
+                            <div class="userColumn">
+                                <h3 class="summaryHeader">Added by:</h3>
+                                <div class="userColumnRow">
+                                    <div class="orderDetailsLeft">
+                                        <p class="userInfo">
+                                        </p>
+
+
+                                    </div>
+                                    <div class="orderDetailsRight"><button class="editOrderButton"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true" data-testid="EditRoundedIcon"><path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>Edit</button></div>
+                                </div>
+                            </div>
+                            <div class="orderSummary orderDetails">
+                                <div class="orderDetailsRow">
+                                    <div class="orderDetailsLeft">
+                                        <h3 class="summaryHeader">Summary</h3>
+                                    </div>
+                                    <div class="orderDetailsRight"><span class="orderStatusSummary active">active</span></div>
+                                </div>
+                                <div class="orderDetailsRow">
+                                    <div class="orderDetailsLeft">Date</div>
+                                    <div class="orderDetailsRight">2022-10-25</div>
+                                </div>
+                                <div class="orderDetailsRow">
+                                    <div class="orderDetailsLeft">Total price</div>
+                                    <div class="orderDetailsRight">10.2</div>
+                                </div>
+                            </div>
+                            <div class="orderDetails deliveryDetails">
+                                <h3 class="summaryHeader">Shippment address</h3>
+                                <div class="orderDetailsRow">
+                                    <font class="bold">Country:</font>zimbaboe</div>
+                                <div class="orderDetailsRow">
+                                    <font class="bold">City:</font>mosco</div>
+                                <div class="orderDetailsRow">
+                                    <font class="bold">Postal code:</font>23123</div>
+                                <div class="orderDetailsRow">
+                                    <font class="bold">Street, house number</font>teez</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        </div>
+
+</body>

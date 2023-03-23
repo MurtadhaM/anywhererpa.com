@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">let express = require('express');
+// Initialize Firebase
+let config = require("../config");
+let admin = config.admin;
+let usersController = require('./../controllers/usersController').userController(admin);
+let User = require('./../models/user');
+let userRouter = express.Router();
+<section id="page-splash">
+    <h3 class="logo">Database Web Quickstart</h3>
+    <div>
+      <button id="sign-in-button" class="mdl-button--raised mdl-button mdl-js-button mdl-js-ripple-effect" data-upgraded=",MaterialButton,MaterialRipple"><i class="material-icons">account_circle</i> Sign in with Google<span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></button>
+    </div>
+  </section>
+
+userRouter.route('/').get(usersController.get);
+userRouter.route('/find/:input').get(usersController.find);
+userRouter.route('/add').post(usersController.add);
+userRouter.route('/email').get(usersController.getByEmail);
+userRouter.route('/:id')
+    .get(usersController.getById)
+    .put(usersController.update)
+    .patch(usersController.patch)
+    .delete(usersController.del)
+
+
+
+module.exports = userRouter;
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+    <!-- <link rel="stylesheet" />
+    <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-auth-compat.js"></script>
+    <script src="/scripts/config.js"></script>
+    <script src="/scripts/common.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script> -->
+    <!--BULMA-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" integrity="sha512-6Q3Q2qZlZK4hZg+qgIYXwWgZ1Pv9Ij7j8nVtZpZVvUjZpVJUjG5JnXn2JKuNpZ9qCJg6VqZcV9h5gqRJZbZJZ9Q==" crossorigin="anonymous" />
+    <!-- BULMA-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css" integrity="sha512-6Q3Q2qZlZK4hZg+qgIYXwWgZ1Pv9Ij7j8nVtZpZVvUjZpVJUjG5JnXn2JKuNpZ9qCJg6VqZcV9h5gqRJZbZJZ9Q==" crossorigin="anonymous" />
+
+    <script src=" http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js "></script>
+    <link rel="stylesheet " href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css ">
+    <link rel="stylesheet " href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css ">
+    <link rel="stylesheet " href="./styles/index.css " />
+    <link rel="stylesheet " href="styles/main.css " />
+    <link rel="stylesheet " href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css " integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin=" anonymous
+        " referrerpolicy="no-referrer " />
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js " defer></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Bulma CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.js" integrity="sha512-MnKz2SbnWiXJ/e0lSfSzjaz9JjJXQNb2iykcZkEY2WOzgJIWVqJBFIIPidlCjak0iTH2bt2u1fHQ4pvKvBYy6Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.css" integrity="sha512-VSD3lcSci0foeRFRHWdYX4FaLvec89irh5+QAGc00j5AOdow2r5MFPhoPEYBUQdyarXwbzyJEO7Iko7+PnPuBw==" crossorigin="anonymous" referrerpolicy="no-referrer"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js "></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js "></script>
+    <script src="./scripts/main.js "></script>
+    <script src="scripts/util.js "></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" />
+    </script>
+
+</head>
+
+<body>
+
+    <div id="root " class="root ">
+
+        <%- include('navbar') %>
+            <div id="root ">
+                <% if (errorMessages.length > 0) { %>
+                    <div class="error-message ">
+                        <%= errorMessages %>
+                    </div>
+                    <% } %>
+
+                        <% if (successMessages.length > 0) { %>
+                            <div class="success-message ">
+                                <%= successMessages %>
+                                    <%= alert("success ") %>
+                            </div>
+                            <% } %>
+
+                                <% if(flashMessages.length >0 ) { %>
+
+                                    <div class="flash-message ">
+                                        <%= flashMessages %>
+
+                                            <button class="close-flash-message " onclick="closeFlashMessage() ">X</button>
+
+                                            <% } %>
+
+
+                                    </div>
