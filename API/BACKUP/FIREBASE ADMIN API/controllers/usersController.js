@@ -6,19 +6,26 @@ let docModel = require('../models/documents')
 /**
  * Add user to database
  */
-let addUsertoDB = async(user) => {
+let addUsersDB = async(user) => {
     let newUser = new User({
-        uid: user.uid,
+        name: user.name,
         email: user.email,
+        phone: user.phone,
+        role: user.role,
+        uid: user.uid,
+        password: user.password,
+        status: true,
+        created: Date.now(),
+        updated: Date.now(),
+        lastLogin: Date.now(),
+        documents: [],
     });
-
     let savedUser = await newUser.save().then((user) => {
         console.log('User saved to database');
         return user;
     }).catch((err) => {
         console.log(err);
     });
-
     return savedUser;
 }
 
@@ -105,7 +112,7 @@ let userController = (Admin) => {
 
 
 
-                addUsertoDB(user);
+                addUsersDB(user);
                 return user
             })
             .catch((error) => {
@@ -331,4 +338,5 @@ let userController = (Admin) => {
     }
 }
 
+module.exports = userController;
 exports.userController = userController;

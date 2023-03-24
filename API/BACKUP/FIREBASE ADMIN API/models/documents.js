@@ -103,31 +103,20 @@ DocumentSchema.static.userDocuments = async function(id) {
     return docs;
 };
 
+DocumentSchema.static.approveDocument = async function(id) {
+    const doc = await this.findByIdAndUpdate(id, { approved: true }, { new: true });
+    return doc;
+};
 
-/**
- * Pre-save hooks
- * */
-DocumentSchema.pre('save', async function save(next) {
-    try {
-        if (!this.isModified('name')) return next();
-    } catch (error) {
-        return next(error);
-    }
-});
+DocumentSchema.static.find = async function(query) {
+    const docs = await this.find(query);
+    return docs;
+};
 
-DocumentSchema.pre('update', async function update(next) {
-    try {
-        if (!this.isModified('name')) return next();
-    } catch (error) {
-        return next(error);
-    }
-});
+DocumentSchema.static.getDocument = async function() {
+    const doc = await this.find();
+    return doc;
+}
 
-
-
-/**
- * Document Model
- * */
-const Document = client.model('Document', DocumentSchema);
-
-exports.Document = Document;
+module.exports = client.model('Document', DocumentSchema);
+exports.Document = client.model('Document', DocumentSchema);

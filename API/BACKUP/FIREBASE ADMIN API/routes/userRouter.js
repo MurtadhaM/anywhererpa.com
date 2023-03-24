@@ -2,7 +2,6 @@ let express = require('express');
 // Initialize Firebase
 let config = require("../config");
 let admin = config.admin;
-let usersController = require('./../controllers/usersController').userController(admin);
 let User = require('./../models/user');
 let userRouter = express.Router();
 

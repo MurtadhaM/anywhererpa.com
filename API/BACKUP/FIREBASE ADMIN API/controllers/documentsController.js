@@ -15,7 +15,6 @@ let storageConfig = require('../config').storageConfig;
  *  UPLOADER MIDDLWARE  
  */
 const uploadFile = require("../middlewares/upload");
-const { Document } = require('../models/documents');
 
 
 let documentsController = (Admin) => {
@@ -104,7 +103,7 @@ let documentsController = (Admin) => {
 
         if (documents) {
             res.status(200);
-            res.send(documents);
+            console.log(documents);
         } else {
             res.status(500);
             res.send('Failed');
@@ -225,31 +224,22 @@ let documentsController = (Admin) => {
     }
 
     const del = async(req, res) => {
-        try {
-            let id = req.params.id;
-            let doc = await Document.findByIdAndDelete(id)
-                .then(function(docRef) {
-                    return docRef;
-                })
-                .catch(function(error) {
-                    console.error("Error deleting document: ", error);
-                    console.log(error);
-                });
+        let id = req.params.id;
+        let doc = await db.collection('documents').doc(id).delete()
+            .then(function(docRef) {
+                return docRef;
+            })
+            .catch(function(error) {
+                console.error("Error deleting document: ", error);
+            });
 
-            if (doc) {
-                res.status(200);
-                res.flash('success', 'Document deleted successfully');
-                res.redirect('/documents');
-            } else {
-                res.status(500);
-                console.log('FAILED TO DELETE DOCUMENT');
-                res.redirect('/documents');
-            }
-        } catch (err) {
-            console.log(err);
-
+        if (doc) {
+            res.status(200);
+            res.send(doc);
+        } else {
+            res.status(500);
+            res.send('Failed');
         }
-
     }
 
     return {

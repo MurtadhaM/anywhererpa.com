@@ -11,10 +11,15 @@ const secret = require('../config').secret;
  * User Schema
  */
 const UserSchema = new Schema({
+    _id: {
+        type: Schema.Types.ObjectId,
+        default: new mongoose.Types.ObjectId()
+    },
     uid: {
         type: String,
-        unique: true,
-        trim: true
+        required: [true, 'UID is required'],
+        unique: [true, 'UID already exists'],
+        trim: [true, 'UID cannot be empty'],
     },
 
     email: {
@@ -60,6 +65,12 @@ const UserSchema = new Schema({
         type: Array,
         default: []
     },
+    additional: {
+        type: Object,
+        default: {}
+    }
+
+
 
 });
 
