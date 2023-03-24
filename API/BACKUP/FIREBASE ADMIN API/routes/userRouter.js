@@ -15,7 +15,11 @@ userRouter.route('/:id')
     .get(usersController.getById)
     .put(usersController.update)
     .patch(usersController.patch)
-    .delete(usersController.del)
+    .delete(usersController.del);
+
+userRouter.route('*').get((req, res) => {
+    res.status(404).send('Not found');
+});
 
 
 

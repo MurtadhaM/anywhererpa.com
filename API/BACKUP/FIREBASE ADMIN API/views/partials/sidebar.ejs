@@ -1,13 +1,5 @@
-<div class="SidebarWrapper">
-    <div class="Sidebar SidebarOpen">
-        <div class="SidebarLogoWrap">
-            <div class="SidebarLogo">
-                <img class="logo" alt="" src="/images/logo.png" width="100%" />
-            </div>
-        </div>
-        <ul class="SidebarList">
-
-
-        </ul>
-    </div>
-</div>
+<% if (role=='admin'){%>
+<%- include('adminSide') %>
+<% } else {%>
+<%- include('sidebar_user') %>
+<% } %>

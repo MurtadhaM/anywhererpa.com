@@ -50,18 +50,18 @@ async function createSessionCookie(req, res) {
             req.session.token = sessionCookie;
             admin.auth().verifySessionCookie(sessionCookie, true).then((decodedClaims) => {
                 console.log('session cookie verified successfully');
-                console.log('adding user to session');
-
+                console.log(decodedClaims);
 
                 req.session.user = decodedClaims;
+                res.locals.user = decodedClaims;
+                res.locals.token = sessionCookie;
                 console.log('user added to session');
                 /**
                  * ADD ROLE TO SESSION
                  */
-                req.session.user = getRole(decodedClaims).then((role) => {
+                req.session.role = getRole(decodedClaims).then((role) => {
                     req.session.role = role;
                     req.session.user.role = role;
-                    req.session.user = decodedClaims;
                     req.session.save();
                     console.log('role added to session');
                 }).catch((err) => {
@@ -102,6 +102,25 @@ async function createSessionCookie(req, res) {
 function verifySessionCookie(req, res, next) {
     // Check if request is authorized with Firebase ID token.
     let sessionCookie = req.cookies.token || req.session.token || '';
+    /**
+     * ADD ROLE TO SESSION
+     */
+    if (!sessionCookie || sessionCookie === 'undefined' || sessionCookie === 'null' || sessionCookie === '') {
+        next();
+    } else
+    if (sessionCookie) {
+        admin.auth().verifySessionCookie(sessionCookie, true).then((decodedClaims) => {
+            console.log('session cookie verified successfully');
+            console.log('user added to session');
+            req.session.user = decodedClaims;
+
+        }).catch((error) => {
+            console.log(error);
+
+        });
+
+    }
+
     if (!req.session.token || req.session.token === 'undefined' || req.session.token === 'null' || req.session.token === '') {
         res.status(401).redirect('/login');
         return;
@@ -112,11 +131,28 @@ function verifySessionCookie(req, res, next) {
 }
 
 
-
+const ADMIN_ROUTES = require('../config').ADMIN_ROUTES;
 
 function checkAuth(req, res, next) {
 
     const sessionCookie = req.cookies.session || req.session.token || '';
+
+
+    res.locals.user = req.session.user || null;
+    res.locals.role = req.session.role || null;
+    res.locals.token = req.session.token || null;
+    res.locals.session = req.session || null;
+    if (req.session.role === 'admin') {
+        PUBLIC_ROUTES.push(ADMIN_ROUTES);
+    }
+
+
+    if (ADMIN_ROUTES.includes(req.path) && req.session.role !== 'admin') {
+        console.log('Aunthentication failed for admin route')
+        res.status(401).redirect('/dashboard');
+        return;
+    }
+
     /**
      * Skip the middleware if the route is excluded
      */
@@ -124,17 +160,23 @@ function checkAuth(req, res, next) {
         console.log(`Skipping auth middleware for ${req.path}`)
         next();
         return;
+    } else
+
+
+    if (!sessionCookie || sessionCookie === 'undefined' || sessionCookie === 'null' || sessionCookie === '') {
+        res.status(401).redirect('/login');
+        return;
     }
 
     /**
+     * 
      * Check if the session cookie is present.
      * */
 
 
 
 
-    verifySessionCookie(req, res, next);
-
+    next();
 }
 
 

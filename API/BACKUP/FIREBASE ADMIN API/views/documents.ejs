@@ -1,4 +1,6 @@
+
 <%- include('partials/header') %>
+
 <script src="/scripts/upload.js"></script>
 
 <%- include('partials/sidebar') %>
@@ -60,12 +62,12 @@
 
 
                 <td>
-                    <a href="/documents/<%=document._id%>" class="editOrder">   
+                <!--DELETE LINK -->
+                  <abv type="button" class="button is-primary is-round ius" href="/documents/<%=document._id%>" class="deleteOrder" >
 
 
                     <i id="editOrderButton" class="fas fa-2x fa-edit"></i>
 
-                  </a>
                 </td>
               </tr>
 
@@ -100,4 +102,32 @@
 
     </body>    
 
-    </html>
+    </html><script defer>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    $('abv').click(function (e) {
+      e.preventDefault();
+      console.log('delete');
+      var url =$(this)[0].attributes.href.value
+      var row = $(this).closest('tr');
+      row.remove();
+      $.ajax({
+        url: url,
+        type: 'DELETE',
+        success: function (result) {
+          console.log(result);
+          row.remove();
+        }
+      }).fail(function (err) {
+        console.log(err);
+      }).always(function () {
+row.remove()      });
+      
+    }
+                   
+  );
+
+
+
+});
+</script>

@@ -104,27 +104,6 @@
 
     
 
-      <% if (errorMessages.length > 0) { %>
-      <div class="error-message ">
-        <%= errorMessages %>
-      </div>
-      <% } %>
-
-      <% if (successMessages.length > 0) { %>
-      <div class="success-message ">
-        <%= successMessages %>
-        <%= alert("success ") %>
-      </div>
-      <% } %>
-
-      <% if(flashMessages.length >0 ) { %>
-
-      <div class="flash-message ">
-        <%= flashMessages %>
-        <button class="close-flash-message " onclick="closeFlashMessage() ">X</button>
-
-        <% } %>
-
 </script>
 <div class="navbar">
     <div class="navbarWrap">

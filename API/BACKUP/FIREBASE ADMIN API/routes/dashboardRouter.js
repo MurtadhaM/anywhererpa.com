@@ -17,6 +17,7 @@ const session = require('express-session');
 const MongoStore = require("connect-mongo");
 const PORT = config.PORT;
 const flash = require('connect-flash');
+const { checkAuth } = require("../middlewares/auth");
 const documentsController = require("../controllers/documentsController").documentsController(config.admin);
 
 
@@ -132,17 +133,23 @@ dashboardRouter.route('/clients').get(async(req, res) => {
 /**
  * Documents page
  * */
-dashboardRouter.route('/documents').get(async(req, res, next) => {
-    req.flash('info', 'Documents');
+dashboardRouter.route('/documents').get(checkAuth, async(req, res) => {
+
     /** 
      * GET ALL DOCUMENTS WHERE USER ID = CURRENT USER ID
      */
+
+    if (req.session.user) {
+        console.log(req.session.user.email);
+    } else {
+        console.log('No user');
+    }
+
     let documents = await Document.Document.find({ email: req.session.user.email }).then((documents) => {
         return documents;
     }).catch((err) => {
         console.log(err);
     });
-
     res.render('documents', { documents: documents });
 
 });
@@ -158,32 +165,34 @@ dashboardRouter.route('/settings').get((req, res) => {
  * Clients page - add client 
  * Clients page - edit client
  * */
-dashboardRouter.route('/clients/:id').get((req, res) => {
+dashboardRouter.route('/clients/:id').get(async(req, res) => {
     // Get client by id
     console.log(req.params.id);
-    let user = User.findById(req.params.id).then((user) => {
-        // See the tables below for the contents of userRecord
-        console.log(user);
+    let user = await User.findById(req.params.id).then((user) => {
         return user;
-    }).catch(function(error) {
-        // See the tables below for the contents of error
-        let err = error
-        return err;
+    }).catch((err) => {
+        console.log(err);
     });
 
-    if (user.uid) {
-        res.status(200);
-        res.send(user);
+
+
+    if (user) {
+        res.render('client/edit', { user: user });
+    } else {
+        req.flash('error', 'User not found');
+        res.redirect('/clients');
     }
 
-    user.then((user) => {
-        res.render('client/edit', { user: user });
-    });
+
+
 
 
 })
 
 
 
+/**
+ * ALL OTHER ROUTES
+ * */
 
 exports.dashboardRouter = dashboardRouter;

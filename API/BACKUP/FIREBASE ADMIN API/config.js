@@ -8,23 +8,20 @@ exports.secret = 'secret';
 /**
  * PROTECTED ROUTES
  * */
-exports.PROTECTED_ROUTES = [
-    '/profile',
+
+/**
+ * ADMIN ROUTES
+ */
+exports.ADMIN_ROUTES = [
     '/users',
-    '/documents',
-    '/documents/upload',
-    '/documents/unapproved',
-    '/documents/:id',
-    '/users/:id',
-    '/users/find/:input',
-    '/users/email',
-    '/users/add',
-    '/users/:id',
-    '/users/find/:input',
-    '/users/email',
-    '/users/add',
-    '/users/:id',
-];
+    '/clients',
+    '/settings',
+    '/admin',
+    '/admin/users',
+    '/admin/users/:id',
+    '/clients/:id'
+
+]
 
 /**
  * PUBLIC ROUTES

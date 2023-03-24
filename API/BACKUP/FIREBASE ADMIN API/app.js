@@ -15,6 +15,11 @@ const flash = require('connect-flash');
 
 
 /**
+ * METHOD OVERRIDE
+ */
+const methodOverride = require('method-override');
+
+/**
  * Session Store
  */
 
@@ -45,6 +50,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 
+app.use(methodOverride('_method'));
 /**
  * Main Router
  */
@@ -108,14 +114,15 @@ app.use(session({
 /**
  * FLASH MESSAGES MIDDLEWARE FOR ALL ROUTES
  */
-app.use((req, res, next) => {
-    res.locals.flashMessages = req.flash();
-    res.locals.successMessages = req.flash('success_msg');
-    res.locals.user = req.session.user;
-    res.locals.errorMessages = req.flash('error_msg');
-    res.locals.error = req.flash('error');
-    next();
-});
+// app.use((req, res, next) => {
+//     res.locals.flashMessages = req.flash();
+//     res.locals.successMessages = req.flash('success_msg');
+//     res.locals.user = req.session.user; 
+//     res.locals.role = req.session.role || 'user';
+//     res.locals.errorMessages = req.flash('error_msg');
+//     res.locals.error = req.flash('error');
+//     next();
+// });
 
 
 

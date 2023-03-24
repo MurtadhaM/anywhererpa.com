@@ -15,6 +15,7 @@ let storageConfig = require('../config').storageConfig;
  *  UPLOADER MIDDLWARE  
  */
 const uploadFile = require("../middlewares/upload");
+const { Document } = require('../models/documents');
 
 
 let documentsController = (Admin) => {
@@ -33,10 +34,6 @@ let documentsController = (Admin) => {
          * */
 
 
-
-
-
-
         console.log('DOCUMENTS CONTROLLER: UPLOADING DOCUMENT')
             /**
              * GET THE FILE FROM THE REQUEST
@@ -46,13 +43,9 @@ let documentsController = (Admin) => {
         /**
          * GET THE FORM DATA FROM THE REQUEST
          */
-
-        console.log(req.file);
-        console.log(req.body);
-        console.log(req.headers)
-            /**
-             *  CREATE DOCUMENT OBJECT 
-             */
+        /**
+         *  CREATE DOCUMENT OBJECT 
+         */
         let document = new docModel({
             name: req.file.originalname,
             path: req.file.path,
@@ -232,22 +225,31 @@ let documentsController = (Admin) => {
     }
 
     const del = async(req, res) => {
-        let id = req.params.id;
-        let doc = await db.collection('documents').doc(id).delete()
-            .then(function(docRef) {
-                return docRef;
-            })
-            .catch(function(error) {
-                console.error("Error deleting document: ", error);
-            });
+        try {
+            let id = req.params.id;
+            let doc = await Document.findByIdAndDelete(id)
+                .then(function(docRef) {
+                    return docRef;
+                })
+                .catch(function(error) {
+                    console.error("Error deleting document: ", error);
+                    console.log(error);
+                });
 
-        if (doc) {
-            res.status(200);
-            res.send(doc);
-        } else {
-            res.status(500);
-            res.send('Failed');
+            if (doc) {
+                res.status(200);
+                res.flash('success', 'Document deleted successfully');
+                res.redirect('/documents');
+            } else {
+                res.status(500);
+                console.log('FAILED TO DELETE DOCUMENT');
+                res.redirect('/documents');
+            }
+        } catch (err) {
+            console.log(err);
+
         }
+
     }
 
     return {

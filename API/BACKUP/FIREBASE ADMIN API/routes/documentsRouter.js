@@ -11,7 +11,6 @@ let documentsController = require('./../controllers/documentsController').docume
 let documentsRouter = express.Router();
 
 
-documentsRouter.route('/').get(documentsController.get);
 
 documentsRouter.route('/upload').post(upload.single('file'), async(req, res) => {
     try {

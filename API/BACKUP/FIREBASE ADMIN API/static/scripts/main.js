@@ -37,38 +37,44 @@ function createNavBar() {
 
 
 const PopulateNavBar = () => {
+    let role = localStorage.getItem('role');
     const navBar = document.querySelector('.SidebarList');
-    const navBarItems = [
-        { name: 'Dashboard', link: 'dashboard', icon: 'fa-tachometer-alt' },
-        { name: 'Clients', link: 'clients', icon: 'fa-users' },
-        { name: 'Documents', link: 'documents', icon: 'fa-file' },
-        { name: 'Settings', link: 'settings', icon: 'fa-cog' },
-        { name: 'Admin', link: 'admin', icon: 'fa-user-shield' },
-        { name: 'Logout', link: 'logout', icon: 'fa-sign-out-alt' }
-    ];
+    let navBarItems = [];
+    if (role === 'admin') {
+        navBarItems = [
+            { name: 'Dashboard', link: 'dashboard', icon: 'fa-tachometer-alt' },
+            { name: 'Clients', link: 'clients', icon: 'fa-users' },
+            { name: 'Documents', link: 'documents', icon: 'fa-file' },
+            { name: 'Settings', link: 'settings', icon: 'fa-cog' },
+            { name: 'Admin', link: 'admin', icon: 'fa-user-shield' },
+            { name: 'Logout', link: 'logout', icon: 'fa-sign-out-alt' },
+        ];
+    } else {
+        navBarItems = [
+            { name: 'Dashboard', link: 'dashboard', icon: 'fa-tachometer-alt' },
+            { name: 'Documents', link: 'documents', icon: 'fa-file' },
+            { name: 'Settings', link: 'settings', icon: 'fa-cog' },
+            { name: 'Logout', link: 'logout', icon: 'fa-sign-out-alt' },
+        ]
+
+
+    }
 
     navBarItems.forEach((item) => {
         console.log(item);
         navBar.innerHTML += createNavItem(item.link, item.name, item.icon)
     })
+
 }
 
 
 $(document).on('DOMContentLoaded', function() {
-    $('#popup').hide();
-    $('#addClient').click(function() {
-        $('#popup').show();
-    });
-    $('.close-btn').click(function() {
-        $('#popup').hide();
-    });
-    setupActionListeners();
-    PopulateNavBar();
+
 });
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    PopulateNavBar();
+    // PopulateNavBar();
 });
 
 

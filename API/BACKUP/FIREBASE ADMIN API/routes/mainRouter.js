@@ -35,7 +35,6 @@ mainRouter.post('/login', createSessionCookie)
 mainRouter.get('/logout', (req, res) => {
     console.log(req.session)
     res.clearCookie('session');
-    config.admin.auth().revokeRefreshTokens(req.session.user.uid);
     req.session.destroy();
     res.user = null;
     res.redirect('/');
