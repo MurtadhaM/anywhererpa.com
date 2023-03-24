@@ -1,0 +1,43 @@
+.SidebarLogo {
+    background-image: url(../images/logo.png);
+    margin-bottom: 20%;
+}
+
+#logo {
+    width: 20%;
+    display: block;
+    margin: auto;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    max-width: 150px;
+}
+
+.SidebarLogoWrap {
+    /** Border **/
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    /** Padding **/
+    padding: 16px;
+    /** Margin **/
+    margin-bottom: 16px;
+    /** Background **/
+    background-color: #fff;
+    /** Box Shadow **/
+    box-shadow: 0 1px 2px rgba(27, 31, 35, .15);
+    /** Display **/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /** Text **/
+}
+
+.userLogo {
+    width: 20px;
+    height: 20px;
+    display: none;
+}
+
+.logo {
+    margin-top: -20%;
+}
