@@ -1,0 +1,165 @@
+
+
+
+    <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-auth-compat.js"></script>
+    <script src="/scripts/config.js"></script>
+    <script src="/scripts/common.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
+    <link type="text/css" rel="stylesheet" href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./styles/index.css" />
+    <link rel="stylesheet" href="./styles/main.css" />
+    <link rel="stylesheet" href="/styles/index.css" />
+
+
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js" defer></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="./scripts/main.js"></script>
+    <%- include('partials/header') %>
+<%- include('partials/sidebar') %>
+
+
+
+        <script type="text/javascript"> </script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // FirebaseUI config.
+
+                window.addEventListener('load', function() {
+                    initApp();
+                }); <
+                section id = "page-splash" >
+                    <
+                    h3 class = "logo" > Database Web Quickstart < /h3> <
+                    div >
+                    <
+                    button id = "sign-in-button"
+                class = "mdl-button--raised mdl-button mdl-js-button mdl-js-ripple-effect"
+                data - upgraded = ",MaterialButton,MaterialRipple" > < i class = "material-icons" > account_circle < /i> Sign in with Google<span class="mdl-button__ripple-container"><span class="mdl-ripple"></span > < /span></button >
+                    <
+                    /div> <
+                    /section>
+                    /**
+                     * Post Token to server
+                     */
+                function postToken(idToken, user) {
+                    fetch("/login", {
+                        method: "POST",
+                        headers: {
+                            Accept: "application/json",
+                            "Content-Type": "application/json",
+                            "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+
+                        },
+                        body: JSON.stringify({
+                            user
+                        }),
+                    }).then(function(response) {
+                        /** Based on the response from the server, we can either redirect to the profile page or display an error message */
+                        if (response.ok) {
+                            window.location.href = "/";
+                        } else {
+                            console.log("Error")
+                        }
+                    })
+                }
+                const handleSigninSuccess = function(user, credential, redirectUrl) {
+                            /**
+                             * Set User Cookie
+                             */
+
+                            console.log(user)
+
+                            fetch("/login", {
+                                method: "POST",
+                                headers: {
+                                    Accept: "application/json",
+                                    "Content-Type": "application/json",
+                                    "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+
+                                },
+                                body: JSON.stringify({
+                                    user
+                                }),
+                            }).then(function(response) {
+                                /** Based on the response from the server, we can either redirect to the profile page or display an error message */
+                                if (response.ok) {
+                                    console.log("Cookie Set")
+                                } else {
+                                    console.log("Error")
+                                }
+                            })
+                var uiConfig = {
+                    /**
+                     * Redirects to /profile after sign in.
+                     */
+                    // 'signInSuccessUrl': '/profile',
+                    'callbacks': {
+                        'signInSuccess':  handleSigninSuccess,
+
+
+
+                         
+
+
+                    },
+                    'signInOptions': [{
+                        iconUrl: "https://raw.githubusercontent.com/MurtadhaM/anywhererpa.com/main/API/FIREBASE%20ADMIN%20API/static/images/logo.png",
+                        disableSignUp: {
+                            status: true
+
+                        },
+
+                        signInFlow: 'popup',
+                        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                        signInMethod: getEmailSignInMethod(),
+                        disableSignUp: {
+                            status: getDisableSignUpStatus()
+                        }
+                    }, {
+                        provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                        recaptchaParameters: {
+                            size: getRecaptchaMode()
+                        }
+                    }, ],
+                    // Terms of service url.
+                    'tosUrl': 'https://www.google.com',
+                    'credentialHelper': CLIENT_ID && CLIENT_ID != 'YOUR_OAUTH_CLIENT_ID' ?
+                        firebaseui.auth.CredentialHelper.GOOGLE_YOLO : firebaseui.auth.CredentialHelper.NONE,
+                    'adminRestrictedOperation': {
+                        status: getAdminRestrictedOperationStatus()
+                    },
+                };
+
+                const initApp = function() {
+                    // Initialize the FirebaseUI Widget using Firebase.
+                    var ui = new firebaseui.auth.AuthUI(firebase.auth());
+                    ui.start('#firebaseui-auth-container', uiConfig);
+                };
+
+            })
+        </script>
+        <div class="bodyWrap">
+            <div class="contentLoginWrap">
+
+                <div class="infoSide">
+                    <div class="loginWrap">
+                        <h2>Hello again!</h2>
+                        <div id="firebaseui-container"></div>
+                        <div id="firebaseui-auth-container"></div>
+                        <p>Log in to your account to get access to app.</p>
+
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        </body>

@@ -1,0 +1,103 @@
+<%- include('partials/header') %>
+<script src="/scripts/upload.js"></script>
+
+<%- include('partials/sidebar') %>
+
+<div class="bodyWrap">
+<div class="adminPanelWrap">
+  <h1 id="title" class="usersInfo">Client
+          <font class="maincolor">Documents</font>
+        </h1>
+    <div class="">
+      
+    
+    <%- include('partials/Fileupload.ejs') %>
+        <div class="orderWrap">
+          <div class="tableResultsWrap">
+         
+            <ul class="pagination"></ul>
+          </div>
+
+          <table class="usersTable">
+            <thead>
+              <tr>
+                <th class="alignCenter">Document Name</th>
+                <th class="alignCenter">Upload Date</th>
+                <th class="alignCenter">Document Status</th>
+                <th class="alignCenter"></th>
+              </tr>
+            </thead>
+            <tbody>
+
+
+    <%if (documents) {%>
+
+    <%documents.forEach(function(document){%>
+
+              <tr class="tableRow">
+                <td class="alignCenter">
+                  <div class="" id="clientID">
+
+                  
+             <%=document.name%>
+
+                </td>
+
+                <td class="alignCenter">
+                  <i class="" id="userEmail">             <%=document.created.toString().split('GMT')[0]%>
+
+                  </i>
+
+                </td>
+
+                <td class="alignCenter"> <i class="<%= (document.status === 'true') ? 'fas fa-check-circle has-text-warning' : 'fas fa-check-circle has-text-success' %>"></i></td>
+
+
+
+
+                </td>
+
+
+
+                <td>
+                    <a href="/documents/<%=document._id%>" class="editOrder">   
+
+
+                    <i id="editOrderButton" class="fas fa-2x fa-edit"></i>
+
+                  </a>
+                </td>
+              </tr>
+
+
+    <%})%>
+
+    <%}else{%>
+
+
+        <div class="noResults">
+            <h1 class="noResultsText">No Documents Found</h1>
+        </div>
+
+    <%}%>
+
+
+
+
+            </tbody>
+
+          </table>
+
+        </div>
+      </div>
+
+
+
+</div>
+
+    </div>  
+
+
+    </body>    
+
+    </html>
