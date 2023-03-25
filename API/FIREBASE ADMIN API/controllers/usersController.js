@@ -3,34 +3,31 @@ let User = require('../models/user')
 let docModel = require('../models/documents')
 
 
+
 /**
  * Add user to database
  */
-let addUsertoDB = async(user) => {
-
-
-
-
+let addUsersDB = async(user) => {
     let newUser = new User({
-        uid: user.uid,
+        name: user.name,
         email: user.email,
-
+        phone: user.phone,
+        role: user.role,
+        uid: user.uid,
+        password: user.password,
+        status: true,
+        created: Date.now(),
+        updated: Date.now(),
+        lastLogin: Date.now()
     });
-
     let savedUser = await newUser.save().then((user) => {
         console.log('User saved to database');
         return user;
     }).catch((err) => {
         console.log(err);
     });
-
     return savedUser;
 }
-
-
-
-
-
 
 
 
@@ -107,22 +104,17 @@ let userController = (Admin) => {
                 /**ADD USER TO DB */
                 //Clean Empty Fields
                 let user = userRecord.toJSON();
-                for (let key in user) {
-                    if (user[key] === undefined || user[key] === null || user[key] === "" || user[key] === " ") {
-                        delete user[key];
-                    }
-                }
 
 
 
-                addUsertoDB(user);
+
+                addUsersDB(user);
                 return user
             })
             .catch((error) => {
                 console.log(error);
                 return error;
             });
-
 
         if (!user.errorInfo) {
             res.setHeader('Content-Type', 'application/json');
@@ -138,30 +130,28 @@ let userController = (Admin) => {
     let getById = async(req, res) => {
         try {
             let id = req.params.id || req.query.id || req.body.id || req.params.input || req.query.input || req.body.input;
-            let user = await Admin.auth().getUser(id)
-                .then(function(userRecord) {
-                    // See the tables below for the contents of userRecord
-                    return userRecord.toJSON();
+            let user = await User.find({ uid: id })
+                .then((user) => {
+                    return user;
                 })
-                .catch(function(error) {
-                    // See the tables below for the contents of error
-                    let err = error.toJSON();
-                    return err;
+                .catch((err) => {
+                    console.log(err);
+                    return false;
                 });
-
-
-            if (user.uid) {
+            if (user) {
                 res.status(200);
                 res.send(user);
             } else {
-                // Error handling
                 res.status(404);
-                res.send(user);
+                res.send({ "error": "User not found" });
             }
         } catch (err) {
             console.log(err);
         }
+
+
     };
+
 
     // Update user properties
     let patch = async(req, res) => {
@@ -173,7 +163,7 @@ let userController = (Admin) => {
             params[p] = req.body[p];
         }
 
-        let user = await Admin.auth().updateUser(uid, params)
+        let user = await User.findOne({ uid: uid })
             .then(function(userRecord) {
                 return userRecord.toJSON();
             })
@@ -195,15 +185,16 @@ let userController = (Admin) => {
     let getByEmail = async(req, res) => {
         let email = req.body.email || req.query.email || req.params.email || req.params.input || req.query.input || req.body.input;
         console.log('Searching for user by email: ' + email)
-        let user = await Admin.auth().getUserByEmail(email)
-            .then(function(userRecord) {
+        let user = await User.findByEmail(email)
+            .then(userRecord => {
                 return userRecord.toJSON();
             })
-            .catch(function(error) {
-                res.status(404);
-                console.log(error);
-                res.send(error);
-            });
+
+        .catch(function(error) {
+            res.status(404);
+            console.log(error);
+            res.send(error);
+        });
 
         if (user) {
             res.status(200);
@@ -212,48 +203,128 @@ let userController = (Admin) => {
         }
     };
 
-    // Delete user
+    // Delete user from firebase and db
     var del = function(req, res) {
-        var uid = req.params.id;
 
+        let uid = req.params.id || req.query.id || req.body.id || req.params.input || req.query.input || req.body.input;
         Admin.auth().deleteUser(uid)
             .then(function() {
-                res.status(200);
-                res.send('User ' + uid + ' deleted');
-                console.log('User deleted');
+                console.log('Successfully deleted user');
             })
             .catch(function(error) {
-                console.log('Error deleting user: ', error);
-                res.status(500);
-                res.send('Internal server error');
-            })
+                console.log('Error deleting user:', error);
+            });
 
-        let put = async(req, res) => {
-            let uid = req.params.id;
-            let email = req.body.email;
-            let password = req.body.password;
-            let user = await Admin.auth().updateUser(uid, {
-                    email: email,
-                    password: password
-                })
-                .then(function(userRecord) {
-                    return userRecord.toJSON();
-                })
-                .catch(function(error) {
-                    console.log(error);
-                    return false;
-                });
-            if (user) {
-                res.status(200);
-                res.send(user);
-            } else {
+        User.deleteOne({ uid: uid }, function(err) {
+            if (err) {
                 res.status(500);
                 res.send('Failed');
+            } else {
+                res.status(200);
+                res.send('Success');
             }
+        });
+    };
+
+    // Get user by phone
+    let getByPhone = async(req, res) => {
+        let phone = req.body.phone || req.query.phone || req.params.phone || req.params.input || req.query.input || req.body.input;
+
+        let user = await User.findByPhone(phone)
+
+        .then(userRecord => {
+            return userRecord.toJSON();
+        })
+
+        .catch(function(error) {
+            res.status(404);
+            console.log(error);
+            res.send(error);
+        });
+
+        if (user) {
+            res.status(200);
+
+            res.send(user);
         }
+    };
+
+
+    /**
+     * Verifies Token & Returns User Data
+     */
+    let TokenLogin = async(req, res) => {
+        const idToken = req.body.idToken || req.query.idToken || req.params.idToken || req.params.input || req.query.input || req.body.input;
+
+        /**
+         * If the session cookie is set, VERIFY the ID token.
+         */
+        if (idToken) {
+            Admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
+                console.log(decodedIdToken);
+
+                /**
+                 * Save the ID token in the session cookie.
+                 *  */
+                req.session.token = idToken;
+                req.session.user = decodedIdToken.user;
+                req.session.save();
+
+
+                res.end(JSON.stringify({ status: "success" }));
+                res.status(200).redirect('/dashboard');
+            }).catch((error) => {
+                console.log(error);
+                res.flash('error', error.message);
+                res.end(JSON.stringify({ status: "error" }));
+            });
+        } else {
+
+            console.log(JSON.stringify({ status: "error" }));
+            res.end(JSON.stringify({ status: "error" }));
+        }
+
+
     }
 
-    // Return the module
+    /**
+     * Verifies Token & Returns User Data
+     *  */
+    let TokenVerify = async(req, res) => {
+        const idToken = req.body.idToken.toString() || '';
+
+        /**
+         * If the session cookie is set, VERIFY the ID token.
+         * */
+        if (req.session.cookie) {
+            Admin.auth().verifyIdToken(idToken).then((decodedIdToken) => {
+                let uid = decodedIdToken.uid;
+
+                /**
+                 * SAVE the ID token in the session cookie.
+                 * */
+                req.session.token = idToken;
+                res.session.user = decodedIdToken.user;
+                req.session.save();
+
+                res.end(JSON.stringify({ status: "success" }));
+                res.status(200).redirect('/dashboard');
+            }).catch((error) => {
+                console.log(error);
+                res.flash('error', error.message);
+                res.end(JSON.stringify({ status: "error" }));
+
+            });
+        } else {
+
+            console.log(JSON.stringify({ status: "error" }));
+            res.end(JSON.stringify({ status: "error" }));
+        }
+
+
+    }
+
+
     return {
         add: add,
         getById: getById,
@@ -262,9 +333,11 @@ let userController = (Admin) => {
         update: patch,
         del: del,
         get: get,
-        find: find
+        find: find,
+        TokenLogin: TokenLogin,
 
     }
 }
 
+module.exports = userController;
 exports.userController = userController;

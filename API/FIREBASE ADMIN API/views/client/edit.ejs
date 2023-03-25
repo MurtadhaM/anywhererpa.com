@@ -27,12 +27,9 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="./../scripts/main.js">
     </script>
-</head>
+</head> 
 
 <body>
-    <%- include('../partials/navbar') %>
-        <div id="root">
-            <%- include('../partials/sidebar') %>
 
                 <div class="bodyWrap">
                     <div class="orderPageContentWrap">
@@ -61,7 +58,7 @@
                                                                     <div class="orderDetailsLeft">Email</div>
                                                                 </div>
                                                                 <div class="value">
-                                                                    <input type="text" name="name" disabled id="name" value="<%= user.email %>">
+                                                                    <input type="text" name="name" disabled id="name" value="<%= client.email %>">
                                                                 </div>
 
                                                                 <div class="orderDetailsRight">
@@ -73,7 +70,7 @@
                                                             <div class="orderDetailsRow">
                                                                 <div class="orderDetailsLeft">User iD</div>
                                                                 <div class="value">
-                                                                    <input type="text" name="name" id="name" value="<%= user.uid %>">
+                                                                    <input type="text" name="name" id="name" value="<%= client.uid %>">
                                                                 </div>
                                                                 <div class="orderDetailsRight">
                                                                     <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
@@ -84,7 +81,7 @@
                                                             <div class="orderDetailsRow">
                                                                 <div class="orderDetailsLeft">lastLogin</div>
                                                                 <div class="value">
-                                                                    <input type="text" name="name" id="name" value="<%= user.lastLogin %>">
+                                                                    <input type="text" name="name" id="name" value="<%= client.lastLogin %>">
                                                                 </div>
                                                                 <div class="orderDetailsRight">
                                                                     <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
@@ -94,7 +91,7 @@
                                                             <div class="orderDetailsRow">
                                                                 <div class="orderDetailsLeft">phone</div>
                                                                 <div class="value">
-                                                                    <input type="text" name="name" id="name" value="<%= user.phone %>">
+                                                                    <input type="text" name="name" id="name" value="<%= client.phone %>">
                                                                 </div>
                                                                 <div class="orderDetailsRight">
                                                                     <button class="editOrderButton"> <i class="fa fa-edit"></i></button>
@@ -112,22 +109,6 @@
 
 
 
-                            <h1 class="summaryHeader">Documents</h1>
-                            <!-- Documents-->
-                            <% for (let document in  user.documents) {%>
-                                <div class="orderDetailsRow">
-                                    <div class="orderDetailsLeft">Name</div>
-                                    <div class="orderDetailsRight">
-                                        <%= document %>
-                                    </div>
-                                </div>
-                                <div class="orderDetailsRow">
-                                    <div class="orderDetailsLeft">URL</div>
-                                    <div class="orderDetailsRight">
-                                        <%= user.documents[document] %>
-                                    </div>
-                                </div>
-                                <% } %>
 
 
 
@@ -135,49 +116,20 @@
 
                         </div>
                         <div class="orderPageRightSide">
-                            <div class="userColumn">
-                                <h3 class="summaryHeader">Added by:</h3>
-                                <div class="userColumnRow">
-                                    <div class="orderDetailsLeft">
-                                        <p class="userInfo">
-                                        </p>
+                            <div class="userColumn">      
+                                <h1 class="summaryHeader">Added by:</h1>
 
+    <div class="orderDetailsRight">
+                                                                    <button class="editOrderButton"> <i class="fa fa-user"></i>
+                                                                        Delete
+                                                                    </button>
+                                                                </div>
+                                                                <br>
 
-                                    </div>
-                                    <div class="orderDetailsRight"><button class="editOrderButton"><svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true" data-testid="EditRoundedIcon"><path d="M3 17.46v3.04c0 .28.22.5.5.5h3.04c.13 0 .26-.05.35-.15L17.81 9.94l-3.75-3.75L3.15 17.1c-.1.1-.15.22-.15.36zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>Edit</button></div>
-                                </div>
-                            </div>
-                            <div class="orderSummary orderDetails">
-                                <div class="orderDetailsRow">
-                                    <div class="orderDetailsLeft">
-                                        <h3 class="summaryHeader">Summary</h3>
-                                    </div>
-                                    <div class="orderDetailsRight"><span class="orderStatusSummary active">active</span></div>
-                                </div>
-                                <div class="orderDetailsRow">
-                                    <div class="orderDetailsLeft">Date</div>
-                                    <div class="orderDetailsRight">2022-10-25</div>
-                                </div>
-                                <div class="orderDetailsRow">
-                                    <div class="orderDetailsLeft">Total price</div>
-                                    <div class="orderDetailsRight">10.2</div>
-                                </div>
-                            </div>
-                            <div class="orderDetails deliveryDetails">
-                                <h3 class="summaryHeader">Shippment address</h3>
-                                <div class="orderDetailsRow">
-                                    <font class="bold">Country:</font>zimbaboe</div>
-                                <div class="orderDetailsRow">
-                                    <font class="bold">City:</font>mosco</div>
-                                <div class="orderDetailsRow">
-                                    <font class="bold">Postal code:</font>23123</div>
-                                <div class="orderDetailsRow">
-                                    <font class="bold">Street, house number</font>teez</div>
-                            </div>
+                             </div>  
+                           
                         </div>
                     </div>
                 </div>
-        </div>
-        </div>
-
+            </div>
 </body>

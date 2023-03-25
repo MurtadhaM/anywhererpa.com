@@ -1,115 +1,84 @@
-let SidebarMenu = (link, title, icon) => {
+const createNavItem = (link, title, icon) => {
     return `
-    <a class="sidebar-link" href="${link}">
-    <li class="SidebarRow">
-        <div class="RowIcon">
-        <i class="fas ${icon}" style="color: #ff0033"></i>
-        </div>
-        <div class="RowTitle">${title}</div>
-    </li>
+<a class="sidebar-link" href="${link}">
+<li class="SidebarRow">
+<div class="RowIcon">
+<i class="fas ${icon}" style="color: #ff0033"></i>
+</div>
+<div class="RowTitle">${title}</div>
+</li>
 </a>
-    `
+`
 }
-
-function loggededInUserUpdateNav(email) {
-    $('.userLogged').innerHTML = email;
-}
-
-function populateNav() {
-    let links = ['Dashboard', 'Clients', 'Documents', 'Settings', 'Profile', 'Admin', "Logout"];
-    let icons = ['fa-tachometer-alt', 'fa-users', 'fa-file-alt', 'fa-cog', 'fa-sharp fa-solid fa-user', 'fa-sharp fa-solid fa-user', 'fa-sharp fa-solid fa-right-from-bracket'];
-    let link = ['/dashboard', '/clients', '/documents', '/settings', '/profile', 'admin', '/logout'];
-    let sidebar = $('.SidebarList');
-
-    /**
-     *  Populate Sidebar
-     */
-    for (var i = 0; i < links.length; i++) {
-        sidebar.append(SidebarMenu(link[i], links[i], icons[i]));
-    }
-
-}
-// LoadedDom 
-
-$(document).on('DOMContentLoaded', function() {
-    populateNav()
-    $('#popup').hide();
-    $('.addOrder').click(function() {
-        $('#popup').show();
-    });
-    $('.close-btn').click(function() {
-        $('#popup').hide();
-    });
-
-    try {
-        if (Cookies.get('user') == undefined) {
-            console.log("user is not signed in");
-
-        } else {
-            console.log("user is signed in");
-            let email = JSON.parse(Cookies.get('user')).email;
-            let userLogged = document.querySelector('.userLogged');
-            $('.userLogged').text('Logged as: ' + email);
-        }
-
-    } catch (err) {
-        console.log(err);
-
-    }
-
-});
-
-$(document).on('load', function() {
-
-
-
-    //set up links
-    populateNav();
-    $('#popup').hide();
-
-    //set up action listeners
-    setupActionListeners();
-    //check if user is logged in AXIOS
-    axios.get('/auth/user').then((response) => {
-        console.log(response.data);
-        if (response.data.user) {
-            console.log("user is signed in");
-        } else {
-            console.log("user is not signed in");
-            window.location.href = "/";
-        }
-    }).catch((error) => {
-        console.log(error);
-    });
-
-    $('.close-btn').click(function() {
-            $('#popup').hide();
-        }
-
-
-    );
-
-    $('.addOrder').click(function() {
-        $('#popup').show();
-    });
-
-
-
-});
-
 
 /**
- *  Populate the links in the navigation bar
+ * Create the navigation bar
  */
+function createNavBar() {
+    const navBar = document.querySelector('.SidebarList');
+    const navBarItems = [
+        { name: 'Dashboard', link: 'dashboard' },
+        { name: 'Orders', link: 'orders' },
+        { name: 'Products', link: 'products' },
+        { name: 'Customers', link: 'customers' },
+        { name: 'Settings', link: 'settings' },
+        { name: 'Admin', link: 'admin' },
+        {
+            name: 'Logout',
+            link: 'logout'
 
 
-/** 
- * 
- * Setup Action Listeners
- * */
-function setupActionListeners() {
-    document.getElementById("Dashboard").addEventListener("click", logout);
+        }
+    ];
+
 }
+
+
+
+
+const PopulateNavBar = () => {
+    let role = localStorage.getItem('role');
+    const navBar = document.querySelector('.SidebarList');
+    let navBarItems = [];
+    if (role === 'admin') {
+        navBarItems = [
+            { name: 'Dashboard', link: 'dashboard', icon: 'fa-tachometer-alt' },
+            { name: 'Clients', link: 'clients', icon: 'fa-users' },
+            { name: 'Documents', link: 'documents', icon: 'fa-file' },
+            { name: 'Settings', link: 'settings', icon: 'fa-cog' },
+            { name: 'Admin', link: 'admin', icon: 'fa-user-shield' },
+            { name: 'Logout', link: 'logout', icon: 'fa-sign-out-alt' },
+        ];
+    } else {
+        navBarItems = [
+            { name: 'Dashboard', link: 'dashboard', icon: 'fa-tachometer-alt' },
+            { name: 'Documents', link: 'documents', icon: 'fa-file' },
+            { name: 'Settings', link: 'settings', icon: 'fa-cog' },
+            { name: 'Logout', link: 'logout', icon: 'fa-sign-out-alt' },
+        ]
+
+
+    }
+
+    navBarItems.forEach((item) => {
+        console.log(item);
+        navBar.innerHTML += createNavItem(item.link, item.name, item.icon)
+    })
+
+}
+
+
+$(document).on('DOMContentLoaded', function() {
+
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // PopulateNavBar();
+});
+
+
+
 
 /**
  * Logout the user
@@ -117,7 +86,7 @@ function setupActionListeners() {
 function logout() {
     firebase.auth().signOut().then(() => {
         // Sign-out successful.
-        window.location.href = "index.html";
+        window.location.href = "/login"
     }).catch((error) => {
         // An error happened.
         console.log(error);

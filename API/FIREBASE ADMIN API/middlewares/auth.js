@@ -1,11 +1,69 @@
-const admin = require('../config').admin;
+const admin = require('firebase-admin');
+const User = require('../models/user');
 const PUBLIC_ROUTES = require('../config').PUBLIC_ROUTES;
+const ADMIN_ROUTES = require('../config').ADMIN_ROUTES;
+
+/**
+ * Check Role
+ */
+
+/**
+ * getRole
+ */
+let getRole = async(decodedClaims) => {
+    let role = 'user';
+    let user = await User.findOne({ email: decodedClaims.email });
+    if (user) {
+        console.log('The user role is: ' + user.role + '')
+        role = user.role;
+    }
+    return role;
+}
+
+
+
+let isAdmin = (req, res, next) => {
+    if (req.session.role === "admin") {
+        next();
+    } else {
+        res.redirect('/dashboard');
+    }
+}
+
+
+/**
+ *  isGuest
+ */
+let isGuest = (req, res, next) => {
+    if (req.session.user) {
+        res.redirect('/dashboard');
+    } else {
+        next();
+    }
+}
+
+/**
+ * isAuth
+ */
+let isAuth = (req, res, next) => {
+    if (req.session.user) {
+        next();
+    } else {
+        res.redirect('/login');
+    }
+}
+
+
+
+
 
 /** 
+ * 
  *  Create a Session Cookie with the Firebase ID Token.
  */
-function createSessionCookie(req, res) {
+async function createSessionCookie(req, res) {
     const idToken = req.body.idToken.toString() || '';
+    console.log('Creating a session cookie with the Firebase ID token: ' + idToken);
     /**
      * Check if the ID token is valid.
      */
@@ -14,144 +72,137 @@ function createSessionCookie(req, res) {
         res.status(401).send('UNAUTHORIZED REQUEST!');
         return;
     }
-    // Set session expiration to 5 days.
-    const expiresIn = 60 * 60 * 24 * 5 * 1000;
-    const storage = MongoStore.create({
-        mongoUrl: config.dbURI,
-        ttl: 60 * 60 * 24 * 7,
-        httpOnly: true,
-        secure: false,
-        sameSite: false,
-
-    })
-
+    let expiresIn = 60 * 60 * 24 * 5 * 1000;
+    let storage = 'session';
     admin
         .auth()
         .createSessionCookie(idToken, { expiresIn }, storage)
 
     .then(
         (sessionCookie) => {
-
-
-
-            res.cookie("token", sessionCookie, { maxAge: expiresIn, httpOnly: true }, storage);
+            res.cookie("token", sessionCookie, { maxAge: expiresIn, httpOnly: true }, { sameSite: 'none', secure: true });
+            console.log('session cookie created successfully', sessionCookie);
             req.session.token = sessionCookie;
-            req.session.save();
+            admin.auth().verifySessionCookie(sessionCookie, true).then((decodedClaims) => {
+                console.log('session cookie verified successfully');
+                console.log(decodedClaims);
 
-            res.end(JSON.stringify({ status: "success" }));
+
+                console.log('user added to session');
+                /**
+                 * ADD ROLE TO SESSION
+                 */
+                let role = getRole(decodedClaims).then((role) => {
+                    req.session.role = role;
+                    req.session.user = decodedClaims;
+                    res.locals.user = decodedClaims;
+                    res.locals.role = role;
+                    req.session.save();
+                    console.log('session saved');
+                }).catch((error) => {
+                    console.log(error);
+                    res.status(401).send('UNAUTHORIZED REQUEST!');
+                });
+
+
+                res.status(200).send('SUCCESS');
+
+            }).catch((error) => {
+                console.log(error);
+                res.status(401).send('UNAUTHORIZED REQUEST!');
+            });
         },
         (error) => {
             console.log(error);
-            res.flash('error', error.message);
-            res.status(401).redirect('/login');
+
+            res.status(401).send('UNAUTHORIZED REQUEST!');
         }
-    );
-}
 
-/**
- * Verify the session cookie. In this case, we are verifying if the Firebase
- * */
-function verifySessionCookie(req, res, next) {
-    // Check if request is authorized with Firebase ID token.
-    if (!req.cookies.session) {
-        res.status(401).send('UNAUTHORIZED REQUEST!');
-        return;
-    }
-    // Verify the session cookie. In this case an additional check is added to detect
-    // if the user's Firebase session was revoked, user deleted/disabled, etc.
-    admin.auth().verifySessionCookie(
-        req.cookies.session, true /** checkRevoked */ ).then((decodedClaims) => {
-        next();
-    }).catch((error) => {
-        // Session cookie is unavailable or invalid. Force user to login.
-        res.status(401).send('UNAUTHORIZED REQUEST!');
-    });
-}
+    )
 
+}
 
 
 
 function checkAuth(req, res, next) {
-    const sessionCookie = req.cookies.session || '';
     /**
-     * Skip the middleware if the route is excluded
+     * PRINT SESSION
      */
+    console.log('CHECKING AUTH');
+    /**
+     * CHECK IF ROUTE IS PUBLIC
+     * */
     if (PUBLIC_ROUTES.includes(req.path)) {
-        console.log(`Skipping auth middleware for ${req.path}`)
-        req.flash('success', 'You are now logged in!')
+        console.log('PUBLIC ROUTE');
         next();
         return;
-    }
+    } else
 
     /**
-     * Check if the session cookie is present.
+     * CHECK IF ROUTE IS ADMIN
      * */
+    if (ADMIN_ROUTES.includes(req.path)) {
+        console.log('ADMIN ROUTE');
+        if (req.session.role === 'admin') {
+            next();
+            return;
+        } else {
+            res.status(401).redirect('/dashboard');
+            return;
+        }
+    } else
 
-    console.log(sessionCookie);
 
-    if (!sessionCookie) {
-        res.status(301).redirect('/login');
+    /**
+     * Check Token
+     * */
+    if (!req.session.token || req.session.token === 'undefined' || req.session.token === 'null' || req.session.token === '') {
+        res.status(401).redirect('/login');
         return;
     }
 
+    next()
 
-    /**
-     * Check if the session cookie is valid.
-     */
-
-    req.flash('success', 'You are now logged in!');
-    console.log('Session cookie is valid!');
-    req.flash('success', 'You are now logged in!');
-    next();
-    /**
-     * The session cookie is present. Verify it.
-     * */
-    // admin.auth().verifySessionCookie(
-    //     sessionCookie, true /** checkRevoked */ ).then((decodedClaims) => {
-    //         console.log('Session cookie is valid!');
-    //         next();
-
-    //         console.log('Session cookie is valid!');
-    //         next();
-    //     }
-
-    // ).catch((error) => {
-    //     console.log(error);
-    //     res.status(301).redirect('/login');
-    // });
 
 }
 
-// let auth = req.headers.authorization;
-// if (!auth) {
-//     res.status(403).send('Unauthorized')
-// }
+/**
+ * 
+ * Check if the session cookie is present.
+ * */
+function checkSessionCookie(req, res, next) {
+    // Check if request is authorized with Firebase ID token.
+    let sessionCookie = req.cookies.token || req.session.token || '';
+    /**
+     * ADD ROLE TO SESSION
+     *  */
 
-// auth = auth.split(' ')[1];
+    if (sessionCookie) {
+        admin.auth().verifySessionCookie(sessionCookie, true).then((decodedClaims) => {
+            console.log('session cookie verified successfully');
+            console.log('user added to session');
+            req.session.user = decodedClaims;
+            res.locals.user = decodedClaims;
+            res.locals.token = sessionCookie;
+            res.locals.role = getRole(decodedClaims);
+            req.session.save();
 
-// // Check if token is valid
-// if (auth.length < 10 || auth === 'null' || auth === 'undefined' || auth === 'false') {
-//     auth = false;
-// }
+        }).catch((error) => {
+            console.log(error);
 
+        });
 
+    }
 
-// console.log(auth);
+    if (!req.session.token || req.session.token === 'undefined' || req.session.token === 'null' || req.session.token === '') {
+        next();
+    } else {
+        res.status(401).redirect('/dashboard');
+        return;
+    }
 
-// if (auth) {
-//     admin.auth().verifyIdToken(auth)
-//         .then(() => {
-//             next()
-//         }).catch((err) => {
-//             console.log(err);
-
-//             res.status(403).send('Unauthorized')
-//         });
-// } else {
-//     res.status(403).send('Unauthorized')
-// }
+}
 
 
 exports.checkAuth = checkAuth;
 exports.createSessionCookie = createSessionCookie;
-exports.verifySessionCookie = verifySessionCookie;

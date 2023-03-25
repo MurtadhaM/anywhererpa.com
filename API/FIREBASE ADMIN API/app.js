@@ -1,81 +1,55 @@
 let express = require("express");
-const config = require("./config");
+let path = require("path");
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 var logger = require('morgan');
 const cors = require('cors')
 let bodyParser = require("body-parser");
-let userRouter = require('./routes/userRouter');
-let documentsRouter = require('./routes/documentsRouter');
-let path = require("path");
 const MongoStore = require("connect-mongo");
+const config = require("./config");
 const PORT = config.PORT;
-const flash = require('connect-flash');
+const csrfProtection = csrf({ cookie: true });
+
+
+const sessionStore = new MongoStore({
+    mongoUrl: config.dbURI,
+    ttl: 60 * 60 * 24 * 7,
+    autoRemove: 'native',
+    autoRemoveInterval: 10,
+    collection: 'sessions'
+});
+
 
 
 /**
- * Session Store
+ * AUTH MIDDLEWARE
  */
+let checkAuth = require('./middlewares/auth').checkAuth;
 
 
-let app = express();
+
+
+const app = express();
+
+
+/**
+ * SESSION
+ */
 app.use(session({
     httpOnly: true,
     secret: config.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    store: MongoStore.create({
-        mongoUrl: config.dbURI,
-        ttl: 60 * 60 * 24 * 7,
-    }),
+    store: sessionStore,
     cookie: {
         maxAge: 60 * 60 * 24 * 7 * 1000,
         sameSite: false,
         secure: false
+
     }
+
 }));
-
-
-
-app.use(flash());
-
-/**
- * FLASH MESSAGES MIDDLEWARE FOR ALL ROUTES
- */
-app.use((req, res, next) => {
-    res.locals.flashMessages = req.flash();
-    res.locals.successMessages = req.flash('success_msg');
-    res.locals.user = req.session.user;
-    res.locals.errorMessages = req.flash('error_msg');
-    res.locals.error = req.flash('error');
-    next();
-});
-
-
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-
-
-/**
- * Main Router
- */
-const mainRouter = require('./routes/mainRouter').mainRouter;
-/**
- *  CSRF PROTECTION
- */
-const csrfProtection = csrf({ cookie: true });
-
-
-/**
- * MIDDLEWARE
- */
-let checkAuth = require('./middlewares/auth').checkAuth;
-// Express
-
-
-
 
 
 
@@ -89,34 +63,41 @@ app.use(cors())
 app.use(logger('dev'));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'static')));
+
 app.use(checkAuth);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 /**
- * FLASH ERROR MESSAGES
+ * SETUP LOCALS
  */
 app.use((req, res, next) => {
-    res.locals.flashMessages = req.flash();
-    console.log(res.locals.flashMessages);
+    res.locals.user = req.session.user;
+    res.locals.role = req.session.role;
     next();
 });
 
 
-// /**
-//  * CSRF TOKEN
-//  * */
-// app.use(csrfProtection);
-
-// app.all("*", (req, res, next) => {
-//     res.cookie("XSRF-TOKEN", req.csrfToken());
-//     next();
-// });
+/**
+ * ROUTES
+ */
 
 
-
-
-
+const mainRouter = require('./routes/mainRouter').mainRouter;
+let userRouter = require('./routes/userRouter');
+let documentsRouter = require('./routes/documentsRouter');
+const dashboardRouter = require('./routes/dashboardRouter')
 
 /**
  * Main Router
@@ -125,17 +106,14 @@ app.use('/', mainRouter);
 /**
  * Dashboard Router 
  */
-app.use('/', require('./routes/dashboardRouter').dashboardRouter);
 
-app.use('/documents', checkAuth);
-// Routes
-app.use('/api/users', userRouter);
-app.use('/api/documents', documentsRouter);
+app.use('/', dashboardRouter);
 
 
-// Server
+
+//app.use('/documents', documentsRouter);
+app.use('/api/users', require('./API/users'));
+//app.use('/api/documents', require('./API/dashboardRouter'));
 app.listen(PORT, () => {
-    console.log(`Listening on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
-
-console.log('API is running on port 3000');

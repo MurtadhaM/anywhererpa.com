@@ -1,28 +1,23 @@
 <%- include('partials/header') %>
-    <%- include('partials/sidebar') %>
-        <div class="bodyWrap">
-            <div class="contentLoginWrap">
-                <div class="loginSide">
-                    <div class="loginWrap">
-                        <h1>Log in</h1>
-                        <div class="input-group">
-                            <input type="text" class="input" required="" /><label class="">Login</label
-          >
-        </div>
-        <div class="input-group">
-          <input type="text" class="input password" required="" /><label
-            class=""
-            >Password</label
-          >
-        </div>
-        <button>Login</button>
+<%- include('partials/sidebar') %>
+<div class="bodyWrap">
+
+
+  <div class="container">
+
+    <div class="userColumnRow">
+      <div class="userColumn">
+
+        <h1 class="title">Approval Stats</h1>
+
       </div>
     </div>
-    <div class="infoSide">
-      <div class="loginWrap">
-        <h2>Hello again!</h2>
-        <p>Log in to your account to get access to app.</p>
-      </div>
-    </div>
+    <%- include('partials/approvalStats') %>
+
   </div>
 </div>
+</div>
+</div>
+</body>
+
+</html>

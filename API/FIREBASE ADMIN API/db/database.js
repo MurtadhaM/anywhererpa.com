@@ -39,8 +39,15 @@ exports.listCollections = async() => {
 
 // List Documents
 exports.listDocuments = async() => {
+        let client = await MongoClient.connect(dbURI, dbOptions);
+        let documents = await client.db().collection('documents').find({}).toArray();
+        console.log(documents);
+        client.close();
+    }
+    // List Documents
+exports.listUsers = async() => {
     let client = await MongoClient.connect(dbURI, dbOptions);
-    let documents = await client.db().collection('users').find().toArray();
-    console.log(documents);
+    let users = await client.db().collection('users').find({}).toArray();
+    console.log(users);
     client.close();
 }

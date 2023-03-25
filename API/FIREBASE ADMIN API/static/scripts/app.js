@@ -19,13 +19,18 @@
 /**
  * @return {!Object} The FirebaseUI config.
  */
+
+// Initialize the FirebaseUI Widget using Firebase.
+var ui = new firebaseui.auth.AuthUI(firebase.auth());
+
 function getUiConfig() {
     return {
         'callbacks': {
             // Called when the user has been successfully signed in.
             'signInSuccessWithAuthResult': function(authResult, redirectUrl) {
-                if (authResult.user) {
+                if (authResut.user) {
                     handleSignedInUser(authResult.user);
+                    l
                 }
                 if (authResult.additionalUserInfo) {
                     document.getElementById('is-new-user').textContent =
@@ -66,8 +71,6 @@ function getUiConfig() {
     };
 }
 
-// Initialize the FirebaseUI Widget using Firebase.
-var ui = new firebaseui.auth.AuthUI(firebase.auth());
 // Disable auto-sign in.
 ui.disableAutoSignIn();
 
@@ -101,10 +104,7 @@ var signInWithPopup = function() {
 };
 
 
-/**
- * Displays the UI for a signed in user.
- * @param {!firebase.User} user
- */
+
 var handleSignedInUser = function(user) {
     document.getElementById('user-signed-in').style.display = 'block';
     document.getElementById('user-signed-out').style.display = 'none';

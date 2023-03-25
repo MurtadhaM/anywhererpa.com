@@ -1,0 +1,276 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="Chat MessageApp">
+    <title>Chat MessageApp</title>
+    <link rel="stylesheet" href="styles/chat.css">
+    <style>
+        .MessageApp {
+            text-align: center;
+            max-width: 728px;
+            margin: 0 auto;
+        }
+        
+        .MessageApp header {
+            background-color: #181717;
+            height: 10vh;
+            min-height: 50px;
+            color: white;
+            position: fixed;
+            width: 100%;
+            max-width: 728px;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 99;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        
+        .MessageApp section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: rgb(40, 37, 53);
+        }
+        
+        .MessageApp main {
+            padding: 10px;
+            height: 80vh;
+            margin: 10vh 0 10vh;
+            overflow-y: scroll;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .MessageApp main::-webkit-scrollbar {
+            width: 0.25rem;
+        }
+        
+        .MessageApp main::-webkit-scrollbar-track {
+            background: #1e1e24;
+        }
+        
+        .MessageApp main::-webkit-scrollbar-thumb {
+            background: #6649b8;
+        }
+        
+        .messageForm {
+            height: 10vh;
+            position: fixed;
+            bottom: 0;
+            background-color: rgb(24, 23, 23);
+            width: 100%;
+            max-width: 728px;
+            display: flex;
+            font-size: 1.5rem;
+        }
+        
+        .MessageApp input {
+            line-height: 1.5;
+            width: 100%;
+            font-size: 1.5rem;
+            background: rgb(58, 58, 58);
+            color: white;
+            outline: none;
+            border: none;
+            padding: 0 10px;
+        }
+        
+        .MessageApp button {
+            background-color: #282c34;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            font-size: 1.25rem;
+        }
+        
+        .messageForm button {
+            width: 20%;
+            background-color: rgb(56, 56, 143);
+        }
+        
+        .MessageApp button:hover {
+            background-color: #0b93f6;
+        }
+        
+        .MessageApp button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .MessageApp .sign-in {
+            color: #282c34;
+            background: white;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .MessageApp ul,
+        .MessageApp li {
+            text-align: left;
+            list-style: none;
+        }
+        
+        .MessageApp p {
+            max-width: 500px;
+            margin-bottom: 12px;
+            line-height: 24px;
+            padding: 10px 20px;
+            border-radius: 25px;
+            position: relative;
+            color: white;
+            text-align: center;
+        }
+        
+        .message {
+            display: flex;
+            align-items: center;
+        }
+        
+        .sent {
+            flex-direction: row-reverse;
+        }
+        
+        .sent p {
+            color: white;
+            background: #0b93f6;
+            align-self: flex-end;
+        }
+        
+        .received p {
+            background: #e5e5ea;
+            color: black;
+        }
+        
+        .MessageApp img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin: 2px 5px;
+        }
+    </style>
+
+    <script defer>
+        /**
+         * For TESTING purposes
+         * */
+
+        let user = ({
+            name: "John Doe",
+            image: "https://lh3.googleusercontent.com/a/AGNmyxbPUX6hZjx6ciSAbN3si0OZsVzP_0JqNJNYqJnO6w=s96-c"
+        });
+        let messages = [{
+            user: {
+                name: "John Doe",
+                image: "https://lh3.googleusercontent.com/a/AGNmyxbPUX6hZjx6ciSAbN3si0OZsVzP_0JqNJNYqJnO6w=s96-c"
+            },
+            message: "Hello"
+        }, {
+            user: {
+                name: "Agent Smith",
+                image: "https://lh3.googleusercontent.com/a/AGNmyxbPUX6hZjx6ciSAbN3si0OZsVzP_0JqNJNYqJnO6w=s96-c"
+            },
+            message: "How are you?"
+        }]
+
+
+
+
+        function loadMessages(messages) {
+            for (let message of messages) {
+                if (message.user.name == user.name) {
+                    document.querySelector('.messages').innerHTML += Createmessage('sent', message.user, message.message);
+                } else {
+                    document.querySelector('.messages').innerHTML += Createmessage('received', message.user, message.message);
+                }
+            }
+        }
+
+
+
+        function Createmessage(origin, user, message) {
+            return `
+            <div class="message ${origin}"><img src="${user.image}">
+                <p>${message}</p>
+            </div><span></span>`;
+
+        }
+
+
+
+
+        function sendMessage(message) {
+            document.querySelector('.messages').innerHTML += Createmessage('sent', user, message);
+            document.querySelector('input').value = "";
+        }
+
+        function receiveMessage() {
+            let message = document.querySelector('input').value;
+            document.querySelector('.messages').innerHTML += Createmessage('received', user, message);
+            document.querySelector('input').value = "";
+
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            let openChat = document.querySelector('.sign-in');
+            let closeChat = document.querySelector('.close-btn')
+            let messageForm = document.querySelector('.messageForm');
+
+            /**
+             * Load messages
+             */
+
+            loadMessages(messages);
+
+            /**
+             * Close the chat window
+             */
+            closeChat.addEventListener('click', function() {
+                document.querySelector('.MessageApp').style.display = 'none';
+            });
+
+            /**
+             * Send message
+             * */
+            messageForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                let message = document.querySelector('.messageBody').value;
+
+                sendMessage(message)
+
+            });
+
+
+
+        });
+    </script>
+
+
+    <body>
+
+
+        <div class="MessageApp">
+            <header>
+                <h1>Chat With Agent</h1><button class="close-btn">Close</button></header>
+            <section>
+                <main class="messages">
+                    <span></span></main>
+                <form class="messageForm"> <input class="messageBody" placeholder="Send Message to Agent" value="">
+                    <button type="submit">🕊️</button></form>
+
+
+            </section>
+        </div>
+    </body>

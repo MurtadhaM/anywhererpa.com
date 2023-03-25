@@ -1,100 +1,70 @@
+<html>
+<head>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/scripts/main.js"></script>
+<style type="text/css" href="/styles/main.css"></style>
+<style type="text/css" href="/styles/index.css"></style>
+</head>
+
+
+<body class="root">
+
+<div class="bodyWrap">
+    <div id="popup" <div="" class="popupWrap">
+    <div class="popup active">
 <div class="popup-inner">
-    <button class="close-btn">
-    <i class="fa fa-close" style="font-size:36px"></i>
-  </button>
-    <div class="popupWrap">
-        <div class="productSummary">
-            <h3 class="productSummaryLeft">Add new order</h3>
-            <div class="productSummaryRight newUserSwitch">
-                <h3>New client?</h3>
-                <input type="radio" name="rdo" id="yes" checked="" /><input type="radio" name="rdo" id="no" />
-                <div class="switch">
-                    <label class="switchLabel" for="yes">Yes</label
-          ><label class="switchLabel" for="no">No</label><span></span>
-                </div>
-            </div>
-        </div>
-        <div class="addNewOrderWrap">
-            <div class="addNewOrderForm">
-                <div class="orderDetails">
-                    <div class="input-group">
-                        <input type="text" placeholder="Client name" class="orderDetailsInput orderDetailsInputHalf" required="" value="" /><input type="text" placeholder="Phone number" class="orderDetailsInput orderDetailsInputHalf" required="" value=""
-                        />
-                    </div>
-                    <div class="input-group">
-                        <input type="textarea" placeholder="Order details" class="orderDetailsInput" required="" value="" />
-                    </div>
-                    <div class="input-group">
-                        <input type="text" placeholder="Country" class="orderDetailsInput orderDetailsInputHalf" required="" value="Polska" /><input type="text" placeholder="Street, house number" class="orderDetailsInput orderDetailsInputHalf" required=""
-                            value="" />
-                    </div>
-                    <div class="input-group">
-                        <input type="text" placeholder="City" class="orderDetailsInput orderDetailsInputHalf" required="" value="" /><input type="text" placeholder="Postal code" class="orderDetailsInput orderDetailsInputHalf" required="" value="" />
-                    </div>
-                    <div class="input-group">
-                        <select class="orderDetailsSelect" placeholder="Status" required="">
-              <option>Open</option>
-              <option>Closed</option>
-              <option>Shipped</option>
-            </select>
-                    </div>
-                </div>
-                <div class="productDetails">
-                    <div class="newOrderTable">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Product name</th>
-                                    <th>Amount</th>
-                                    <th>Price</th>
-                                    <th>Total price</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <input type="text" placeholder="Product name" class="productDetailsInput" required="" value="" />
-                                    </td>
-                                    <td>
-                                        <input type="number" placeholder="1" class="productDetailsInput" required="" value="1" />
-                                    </td>
-                                    <td>
-                                        <input type="number" placeholder="10.00" class="productDetailsInput" required="" value="0" />
-                                    </td>
-                                    <td>0</td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="submitWrap">
-            <div class="productSummary">
-                <div class="productSummaryLeft">
-                    <span class="addNewLine">+ Add next product</span>
-                </div>
-                <div class="productSummaryRight">
-                    <span class="totalCost">Total price of products - 0zł</span>
-                </div>
-            </div>
-            <div class="submitNewOrder">
-                <button class="submitNewOrderBtn">
-          <svg
-            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
-            focusable="false"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            data-testid="AddCircleOutlineRoundedIcon"
-          >
-            <path
-              d="M12 7c-.55 0-1 .45-1 1v3H8c-.55 0-1 .45-1 1s.45 1 1 1h3v3c0 .55.45 1 1 1s1-.45 1-1v-3h3c.55 0 1-.45 1-1s-.45-1-1-1h-3V8c0-.55-.45-1-1-1zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-            ></path></svg
-          ><span class="addOrderText">Add</span>
-        </button>
-            </div>
-        </div>
+<button class="close-btn">
+<i class="fa fa-close" style="font-size:36px"></i>
+</button>
+<div class="popupWrap">
+<div class="productSummary">
+<h3 class="productSummaryLeft">Add New Client</h3>
+<div class="productSummaryRight newUserSwitch">
+    <h3>New client?</h3>
+    <input type="radio" name="rdo" id="yes" checked=""><input type="radio" name="rdo" id="no">
+    <div class="switch">
+        <label class="switchLabel" for="yes">Yes</label><label class="switchLabel" for="no">No</label><span></span>
     </div>
 </div>
+</div>
+<div class="addNewOrderWrap">
+<div class="addNewOrderForm">
+    <div class="orderDetails">
+        <div class="input-group">
+            <input placeholder="Client name" class="orderDetailsInput orderDetailsInputHalf" required="" value="" id="name" type="text"><input placeholder="Phone number" class="orderDetailsInput orderDetailsInputHalf" required="" value="" id="phone" type="phone">
+        </div>
+        <div class="input-group">
+            <input type="textarea" required="" value="" class="orderDetailsInput" id="email" placeholder="Email Address">
+            <input type="textarea" required="" value="" class="orderDetailsInput" id="password" placeholder="Password">
+
+
+        </div>
+        <div class="input-group">
+            <input class="orderDetailsInput orderDetailsInputHalf" required="" value="" placeholder="password" id="password" type="password"><input class="orderDetailsInput orderDetailsInputHalf" required="" value="" placeholder="City" id="city" type="text">
+        </div>
+        <div class="input-group">
+            <input class="orderDetailsInput orderDetailsInputHalf" required="" value="" placeholder="State" id="state" type="text"><input placeholder="Postal code" class="orderDetailsInput orderDetailsInputHalf" required="" value="" id="zipcode" type="text">
+        </div>
+        <div>
+            
+        </div>
+    </div>
+    
+</div>
+</div>
+<div class="submitWrap">
+
+<div class="submitNewOrder">
+    <button class="submitNewOrderBtn" onclick="AddClient()">
+<svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" viewBox="0 0 24 24" aria-hidden="true" data-testid="AddCircleOutlineRoundedIcon">
+<path d="M12 7c-.55 0-1 .45-1 1v3H8c-.55 0-1 .45-1 1s.45 1 1 1h3v3c0 .55.45 1 1 1s1-.45 1-1v-3h3c.55 0 1-.45 1-1s-.45-1-1-1h-3V8c0-.55-.45-1-1-1zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg><span class="addOrderText">Add</span>
+</button>
+</div>
+</div>
+</div>
+</div></div>
+</div></div>
+</body>

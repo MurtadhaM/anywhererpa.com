@@ -10,292 +10,156 @@ let mime = require('mime');
 let ObjectID = require('mongoose').Types.ObjectId;
 let storageConfig = require('../config').storageConfig;
 
+
+
+
 /**
  *  UPLOADER MIDDLWARE  
  */
 const uploadFile = require("../middlewares/upload");
 
-
-let documentsController = (Admin) => {
-
-    /**
-     * Upload a document
-     */
-    let upload = async(req, res) => {
-        let sessionCookie = req.cookies.session || '';
-
-        if (sessionCookie === '') {
-            res.status(401);
-            res.send('Unauthorized');
-        }
-
-        /**
-         * VERIFY SESSION COOKIE
-         * */
-
-        try {
-            let user = await Admin.auth().verifySessionCookie(sessionCookie, true).then((decodedToken) => {
-                // THIS IS THE UID OF THE CURRENT USER
-                console.log('THE USER FOR THE IMAGE' + decodedToken.uid);
-                return decodedToken;
-            }).catch((error) => {
-                console.log(error);
-            });
-
-            /**
-             * SEARCH FOR USER IN DATABASE
-             */
-
-            let SelectedUser = await User.findOne({ email: user.email }).then((user) => {
-                // console.log('USER FOUND IN DATABASE: ' + user);
-                return user;
-            }).catch((err) => {
-                console.log(err);
-            });
-
-
-            /**
-             * CHECK IF USER EXISTS
-             */
-            if (!SelectedUser) {
-                res.status(404);
-                res.send('User not found');
-            } else {
-                console.log('USER FOUND: ' + SelectedUser);
-            }
-
-            /**
-             * UPLOAD FILE
-             *  - Check if file is valid (size, type) 
-             * - Save file to uploads folder
-             * - Save file to database
-             * - Return file object
-             *  */
-
-            await uploadFile(req, res);
-            /**
-             * LOG FILE INFO
-             */
-            console.log(req.file);
-
-            if (req.file == undefined) {
-                return res.status(400).send({ message: "Please upload a file!" });
-            }
-
-            /**
-             *  CREATE DOCUMENT OBJECT 
-             */
-            let document = new docModel({
-                name: req.file.originalname,
-                path: req.file.path,
-                type: req.file.mimetype,
-                size: req.file.size,
-                user: new ObjectID(user._id),
-                email: user.email,
-                uid: user.uid,
-                date: new Date(),
-                approved: false,
-
-
-            });
-
-            /**
-             * UPDATE USER DOCUMENTS ARRAY
-             * */
-            /**
-             * UPDATE DOCUMENTS ARRAY IN USER
-             * */
-            let UserDocuments = SelectedUser.documents;
-            //Insert the document into the user's documents array
-            UserDocuments.push(req.file.filename);
-            console.log('USER DOCUMENTS AFTER PUSH: ' + UserDocuments);
-
-            //Update the user's documents array
-            SelectedUser.updateOne({ documents: UserDocuments }).then((user) => {
-                console.log('USER DOCUMENTS UPDATED: ');
-            }).catch((err) => {
-                console.log(err);
-            });
-
-            console.log('ADDED DOCUMENT TO DATABASE')
-                /**
-                 * SAVE DOCUMENT TO DATABASE
-                 * */
-            document.save().then((doc) => {
-                console.log(doc);
-                res.status(200);
-                res.send({ message: "Uploaded the file successfully: " + req.file.originalname });
-            }).catch((err) => {
-                console.log(err);
-                res.status(500);
-                res.send({ message: `Could not upload the file: ${req.file} ${err}` });
-            });
-        } catch (error) {
-            console.log(error);
-            res.status(500);
-            res.send({ message: `Could not upload the file: ${req.file} ${error}` });
-        }
-    }
+/**
+ * Upload a document
+ */
+let upload = async(req, res) => {
+    let document = new docModel({
+        name: req.file.originalname,
+        path: req.file.path,
+        type: req.file.mimetype,
+        size: req.file.size,
+        user: new ObjectID(SelectedUser._id),
+        date: new Date(),
+        email: userInfo.email,
+        uid: userInfo.uid
+    });
+    await document.save()
 
 
 
 
 
-    const get = async(req, res) => {
+
+    const get = async(req, next, res) => { 
+
 
         let documents = await db.collection('documents').find({}).toArray()
             .then(function(documents) {
-                console.log(documents);
+                /**
+                 * Return the documents
+                 */
                 return documents;
+                next();
 
             }).catch(function(error) {
                 console.log("Error getting documents: ", error);
+
             });
 
         if (documents) {
-            res.status(200);
-            res.send(documents);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
-    }
-
-    const getById = async(req, res) => {
-        let id = req.params.id;
-        // Check if ID is valid
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {
-            res.status(500);
-            res.send('Invalid ID');
-            return;
+            res.locals.documents = documents;
+            next();
         }
 
-        let o_id = new ObjectID(id);
-        let document = await db.collection('documents').find({ _id: o_id }).toArray()
-            .then(function(documents) {
-                console.log(documents);
-                return documents;
-            }).catch(function(error) {
-                console.log("Error getting documents: ", error);
-            });
-
-        if (document) {
-            res.status(200);
-            res.send(document);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
     }
+}
 
-    const getUnapproved = async(req, res) => {
-        let documents = await Admin.firestore().collection('documents').where('approved', '==', false).get()
-            .then(function(querySnapshot) {
-                return querySnapshot.docs;
-            })
-            .catch(function(error) {
-                console.log("Error getting documents: ", error);
-            });
+const Document = require('../models/documents').Document;
 
-        if (documents) {
-            res.status(200);
-            res.send(documents);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
+
+
+
+
+const getUnapproved = async(req, next, res) => {
+    let documents = await db.collection('documents').where('approved', '==', false).get()
+        .then(function(querySnapshot) {
+            return querySnapshot.docs;
+        })
+        .catch(function(error) {
+            console.log("Error getting documents: ", error);
+        });
+
+    if (documents) {
+        res.status(200);
+
+        res.locals.documents = documents;
+        next();
+    } else {
+        res.status(500);
+        res.send('Failed');
     }
+}
 
-    const getByUser = async(req, res) => {
-        let user = req.params.user;
-        let documents = await Admin.firestore().collection('documents').where('user', '==', user).get()
-            .then(function(querySnapshot) {
-                return querySnapshot.docs;
-            })
-            .catch(function(error) {
-                console.log("Error getting documents: ", error);
-            });
 
-        if (documents) {
-            res.status(200);
-            res.send(documents);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
-    }
+const getByUser = async(req, res, next) => {
+    console.log(req.session.user);
+    let user = req.session.user;
 
-    const add = async(req, res) => {
-        let document = req.body;
-        let doc = await Admin.firestore().collection('documents').add(document)
-            .then(function(docRef) {
-                return docRef;
-            })
-            .catch(function(error) {
-                console.error("Error adding document: ", error);
-            });
+    let uid = req.params.uid || req.body.uid || user.uid
+    console.log('UID: ' + uid);
+    let documents = await docModel.find({ email: 'mmarzou0@gmail.com' }).toArray()
+        .then(function(documents) {
+            console.log(documents);
+            return documents;
+        })
 
-        if (doc) {
-            res.status(200);
-            res.send(doc);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
-    }
+    .catch(function(error) {
+        console.log("Error getting documents: ", error);
+    });
 
-    const update = async(req, res) => {
-        let id = req.params.id;
-        let document = req.body;
-        let doc = await Admin.firestore().collection('documents').doc(id).update(document)
-            .then(function(docRef) {
-                return docRef;
-            })
-            .catch(function(error) {
-                console.error("Error updating document: ", error);
-            });
 
-        if (doc) {
-            res.status(200);
-            res.send(doc);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
-    }
-
-    const del = async(req, res) => {
-        let id = req.params.id;
-        let doc = await Admin.firestore().collection('documents').doc(id).delete()
-            .then(function(docRef) {
-                return docRef;
-            })
-            .catch(function(error) {
-                console.error("Error deleting document: ", error);
-            });
-
-        if (doc) {
-            res.status(200);
-            res.send(doc);
-        } else {
-            res.status(500);
-            res.send('Failed');
-        }
-    }
-
-    return {
-        get: get,
-        getById: getById,
-        getUnapproved: getUnapproved,
-        getByUser: getByUser,
-        add: add,
-        update: update,
-        del: del,
-        upload: upload
+    if (documents) {
+        res.locals.documents = documents;
+        next();
 
     }
-
 
 }
 
-exports.documentsController = documentsController;
+const add = async(req, next, res) => {
+    /**
+     * GET THE FILE FROM THE REQUEST
+     */
+    let document = req.body;
+    /**
+         *  CREATE DOCUMENT OBJECT
+     
+            */
+    let newDocument = new docModel({
+
+        name: document.name,
+        path: document.path,
+        type: document.type,
+        size: document.size,
+        user: new ObjectID(req.session.user._id),
+        date: new Date(),
+        email: document.email,
+        uid: document.uid
+    });
+
+
+    newDocument.save()
+        .then(function(docRef) {
+
+                res.status(200);
+                res.send('Document added');
+                next();
+            }
+            .catch(function(error) {
+                    res.status(500);
+                    res.send('Failed');
+                    next();
+                }
+
+
+
+            )
+        )
+    module.exports = {
+        get,
+        getUnapproved,
+        getByUser,
+        add,
+        upload,
+        uploadFile
+    }
+}
